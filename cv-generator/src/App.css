@@ -9,8 +9,8 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  /* Modern gradient background */
-  background: linear-gradient(135deg, #e8eef7 0%, #eef3ff 35%, #f7f9ff 100%);
+  /* White background for black lines/dots */
+  background: #ffffff;
 }
 
 .toolbar {
@@ -28,6 +28,49 @@ body {
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
   margin: 12px;
+}
+
+/* Notice banner */
+.notice {
+  margin: 0 12px 8px 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(254, 252, 232, 0.9); /* warm subtle yellow */
+  color: #713f12;
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.notice-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.notice-content em {
+  font-style: normal;
+  font-weight: 600;
+}
+
+.notice-dismiss {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.notice-dismiss:hover {
+  background: rgba(251, 191, 36, 0.2);
 }
 
 .toolbar-group {
@@ -159,6 +202,25 @@ body {
   gap: 12px;
 }
 
+/* Particles background layer */
+.bg-particles {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none; /* do not block UI, parallax uses detectsOn: window */
+}
+
+.app-root {
+  position: relative;
+  z-index: 1;
+}
+
+@media print {
+  .bg-particles {
+    display: none !important;
+  }
+}
+
 .editor-panel {
   flex: 1;
   display: flex;
@@ -172,15 +234,13 @@ body {
 
 .editor-header {
   padding: 10px 15px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.9),
-    rgba(255, 255, 255, 0.7)
-  );
+  background: rgba(255, 255, 255, 0.55);
   color: #0f172a;
   font-weight: 500;
   font-size: 14px;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .editor {
@@ -208,15 +268,13 @@ body {
 
 .preview-header {
   padding: 10px 15px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.9),
-    rgba(255, 255, 255, 0.7)
-  );
+  background: rgba(255, 255, 255, 0.55);
   color: #0f172a;
   font-weight: 500;
   font-size: 14px;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .preview-content {
@@ -230,7 +288,7 @@ body {
   height: 297mm;
   margin: 0 auto;
   background: white;
-  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.2);
   padding: 0;
   position: relative;
   page-break-after: always;
