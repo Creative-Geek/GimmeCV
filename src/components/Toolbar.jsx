@@ -101,7 +101,7 @@ export default function Toolbar({
   return (
     <div className="toolbar">
       <div className="toolbar-group">
-        <img src={IconImage} alt="CV Generator" className="toolbar-icon" />
+        <img src={IconImage} alt="GimmeCV" className="toolbar-icon" />
         <div>
           <strong style={{ marginRight: "5px" }}>GimmeCV</strong>
         </div>
