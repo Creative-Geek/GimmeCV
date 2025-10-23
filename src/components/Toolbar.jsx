@@ -3,6 +3,7 @@ import { generateHeader, buildHTML } from "../utils/htmlBuilder";
 import { saveToStorage, loadFromStorage } from "../utils/storage";
 import { DEFAULT_CV } from "../utils/constants";
 import { Download, Save, Upload, RotateCcw } from "lucide-react";
+import IconImage from "../../images/icon.png";
 
 // Parse value like "13px" into number and unit
 const parseValue = (value) => {
@@ -163,6 +164,8 @@ export default function Toolbar({
   return (
     <div className="toolbar">
       <div className="toolbar-group">
+        <img src={IconImage} alt="CV Generator" className="toolbar-icon" />
+        <div>GimmeCV</div>
         <button
           className="btn btn-success"
           onClick={downloadPDF}

@@ -1,5 +1,7 @@
 # CV Generator (React + Vite)
 
+![CV Generator](./images/icon.png)
+
 A fast, client‑side CV/Resume generator with a live Markdown editor, pixel‑perfect preview, and one‑click PDF via your browser. Built with React + Vite and designed to preserve the original output exactly.
 
 ![CV Generator preview](./images/screenshot.png)

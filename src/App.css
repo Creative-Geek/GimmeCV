@@ -52,6 +52,13 @@ body {
   font-size: 13px;
 }
 
+.toolbar-icon {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  margin-right: 6px;
+}
+
 .notice-content em {
   font-style: normal;
   font-weight: 600;
