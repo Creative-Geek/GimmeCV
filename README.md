@@ -13,7 +13,7 @@ A fast, client‑side CV/Resume generator with a live Markdown editor, pixel‑p
 - Pixel‑perfect preview that matches the original app’s output
 - A4 preview page with adjustable margins (visual only; print margins remain browser‑controlled)
 - Clean, modern UI with glass toolbar and icon buttons
-- Local save/load (browser storage) and one‑click PDF (uses the browser’s print)
+- Local save/load (browser storage) and one‑click PDF
 - Subtle parallax background (black dots + lines on white) that does not affect print/PDF
 
 ## Quick start
