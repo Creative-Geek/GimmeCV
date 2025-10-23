@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #f5f5f5;
+    }
+
+    .toolbar {
+      background: #2c3e50;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .toolbar-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .toolbar label {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .toolbar input {
+      padding: 4px 8px;
+      border: 1px solid #34495e;
+      border-radius: 3px;
+      width: 70px;
+      font-size: 12px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: #2980b9; }
+    .btn-success { background: #27ae60; }
+    .btn-success:hover { background: #229954; }
+    .btn-danger { background: #e74c3c; }
+    .btn-danger:hover { background: #c0392b; }
+
+    .container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .editor-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: white;
+      border-right: 1px solid #ddd;
+    }
+
+    .editor-header {
+      padding: 10px 15px;
+      background: #34495e;
+      color: white;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    #editor {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+    }
+
+    .preview-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #e8e8e8;
+      overflow: auto;
+    }
+
+    .preview-header {
+      padding: 10px 15px;
+      background: #34495e;
+      color: white;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .preview-content {
+      flex: 1;
+      padding: 20px;
+      overflow: auto;
+    }
+
+    .preview-page {
+      max-width: 210mm;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 0;
+    }
+
+    @media (max-width: 768px) {
+      .container { flex-direction: column; }
+      .editor-panel { border-right: none; border-bottom: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="toolbar-group">
+      <button class="btn btn-success" onclick="downloadPDF()">📄 Download PDF</button>
+      <button class="btn" onclick="saveToStorage()">💾 Save</button>
+      <button class="btn" onclick="loadFromStorage()">📂 Load</button>
+      <button class="btn btn-danger" onclick="resetToDefault()">🔄 Reset</button>
+    </div>
+    <div class="toolbar-group">
+      <label>Font: <input type="text" id="fontSize" value="13px" onchange="updatePreview()"></label>
+      <label>Line: <input type="text" id="lineHeight" value="1.12" onchange="updatePreview()"></label>
+      <label>Top: <input type="text" id="marginTop" value="25px" onchange="updatePreview()"></label>
+      <label>Bottom: <input type="text" id="marginBottom" value="30px" onchange="updatePreview()"></label>
+      <label>Left: <input type="text" id="marginLeft" value="40px" onchange="updatePreview()"></label>
+      <label>Right: <input type="text" id="marginRight" value="40px" onchange="updatePreview()"></label>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="editor-panel">
+      <div class="editor-header">Markdown Editor</div>
+      <textarea id="editor" spellcheck="false"></textarea>
+    </div>
+    <div class="preview-panel">
+      <div class="preview-header">Live Preview</div>
+      <div class="preview-content">
+        <div class="preview-page" id="preview"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+
+  <script>
+    const DEFAULT_CV = `---
+name: Ahmed Taha
+header:
+  - text: |
+      <span style="font-style: italic; font-weight: normal; display: block; margin-top: -7.5px; margin-bottom:5px;">
+      Fresh Software Engineer (AI/ML Focused)
+      </span>
+  - text: <span class="iconify" data-icon="tabler:mail"></span> ahmedtaha1234@gmail.com
+    link: mailto:ahmedtaha1234@gmail.com
+  - text: <span class="iconify" data-icon="tabler:phone"></span> +201557528856
+    link: https://wa.me/201557528856
+  - text: <span class="iconify" data-icon="tabler:map-pin"></span> Cairo, Egypt
+  - text: <span class="iconify" data-icon="tabler:world"></span> creative-geek.tech
+    link: https://creative-geek.tech
+  - text: <span class="iconify" data-icon="tabler:brand-github"></span> github.com/Creative-Geek
+    link: https://github.com/Creative-Geek
+  - text: <span class="iconify" data-icon="tabler:brand-linkedin"></span> linkedin.com/in/ahmed-taha-thecg
+    link: https://linkedin.com/in/ahmed-taha-thecg
+  - text: <span class="iconify" data-icon="tabler:shield-check"></span> Exempted
+---
+
+## Profile
+
+Freshly graduated Software Engineer with hands-on experience in web development, AI integrations & Automation, and multimedia production. Skilled in React, Nodejs, Flask, and Python, aspires to create dynamic, user-friendly applications. Has delivered projects from web solutions to AI-driven tools—including an Arabic Handwriting E2E OCR system. Strong in UI/UX design and committed to crafting efficient, engaging digital experiences.
+
+## Projects
+
+[**Focal,** _AI-Powered Financial Tracker_](https://focal.creative-geek.tech/)
+~ 07/2025 – 09/2025
+
+- Developed a full-stack expense tracker using React, TypeScript, Cloudflare Workers, Hono.js, and Google Gemini AI.
+- Implemented **AI receipt** scanning to automatically extract and categorize expense details from single photos, with JWT auth, email verification, and password reset.
+
+[**Knitty,** _AI Resume Optimizer_](https://github.com/Creative-Geek/Knitty)
+~ 06/2025 – 08/2025
+
+- Created a proof-of-concept Jupyter notebook system using LangChain, multiple LLMs, and cosine similarity to analyze CVs against job postings and generate tailored cv.
+- Integrated PDF processing, web scraping, and RAG pipeline for job url to text, achieving 5-15% improvements.
+
+## Skills
+
+**Technical Skills** – **Programming & Frameworks:** Python, C++, JavaScript, Typescript, React, React Native, Next.js, Vue, Flask, FastAPI, Django, Node.js, WordPress. | **Generative AI:** LLMs, Agent AIs, LangChain, Stable Diffusion, Flux, Vertex AI Platform | **AI/ML:** TensorFlow, Image Processing. | **Cloud & Containerization:** Google Cloud, Azure, Docker. | **Tools & Technologies:** GitHub, Git, Jira, Linux, Prisma, SQLite, PostgreSQL, MongoDB, Godot Engine, QT. | **Multimedia & Design:** Graphic Design, Video Editing, Motion Graphics, Adobe Creative Suite, UI/UX Design. | **Technical Communication:** Technical Writing, Content Creation.
+
+## Education
+
+**Faculty of Engineering, Suez Canal University,**
+~ 09/2019 – 07/2024 | _Ismailia, Egypt_
+
+_Bachelor in Computer Engineering | GPA: B- | Graduation Project Grade: Excellent_`;
+
+    const BASE_CSS = `#resume-preview [data-scope="vue-smart-pages"][data-part="page"] {
+  background-color: white;
+  color: black;
+  text-align: justify;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  font-size: 12px;
+}
+
+#resume-preview p,
+#resume-preview li,
+#resume-preview dl {
+  margin: 0;
+}
+
+#resume-preview h1,
+#resume-preview h2,
+#resume-preview h3 {
+  font-weight: bold;
+}
+
+#resume-preview h1 {
+  font-size: 2.13em;
+}
+
+#resume-preview h2,
+#resume-preview h3 {
+  margin-bottom: 3px;
+  font-size: 1.2em;
+}
+
+#resume-preview h2 {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
+#resume-preview ul,
+#resume-preview ol {
+  padding-left: 1.5em;
+  margin: 0.1em 0;
+}
+
+#resume-preview ul {
+  list-style-type: circle;
+}
+
+#resume-preview ol {
+  list-style-type: decimal;
+}
+
+#resume-preview dl {
+  display: flex;
+}
+
+#resume-preview dl dt,
+#resume-preview dl dd:not(:last-child) {
+  flex: 1;
+}
+
+#resume-preview svg.iconify {
+  vertical-align: -0.2em;
+}
+
+#resume-preview img {
+  max-width: 100%;
+}
+
+#resume-preview .resume-header {
+  text-align: center;
+}
+
+#resume-preview .resume-header h1 {
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+#resume-preview .resume-header-item:not(.no-separator)::after {
+  content: " | ";
+}
+
+#resume-preview h2 {
+  text-transform: uppercase;
+  border-bottom-width: 2px;
+  padding-bottom: 2px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+#resume-preview .resume-header-item:not(.no-separator)::after {
+  content: "";
+}
+
+#resume-preview .resume-header-item {
+  display: inline-block;
+  margin: 0 4px;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+#resume-preview .project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 5px;
+  margin-bottom: 3px;
+}
+
+#resume-preview .project-title {
+  flex: 1;
+}
+
+#resume-preview .project-date {
+  flex-shrink: 0;
+  margin-left: 20px;
+  font-style: italic;
+  white-space: nowrap;
+  color: #333333;
+}
+
+#resume-preview h3,
+#resume-preview p > strong:first-child {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+#resume-preview .project-title p {
+  margin: 0;
+  line-height: 1.2;
+  display: inline-block;
+  width: 100%;
+}
+
+#resume-preview .project-title p strong,
+#resume-preview .project-title p em,
+#resume-preview .project-title p a {
+  display: inline !important;
+  white-space: normal;
+}
+
+#resume-preview .project-title p strong {
+  margin-right: 2px;
+}
+
+#resume-preview .project-title p em {
+  font-style: italic;
+}
+
+#resume-preview p {
+  margin-bottom: 3px;
+}
+
+#resume-preview dl dt,
+#resume-preview dl dd {
+  flex: none;
+}
+
+#resume-preview dl dd {
+  white-space: nowrap;
+}
+
+#resume-preview ul {
+  list-style-type: disc;
+  margin-left: 10px;
+  margin-bottom: 4px;
+}
+
+#resume-preview .resume-header h1 + .resume-header-item {
+  display: block;
+}
+
+#resume-preview a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#resume-preview a:hover {
+  color: inherit;
+  text-decoration: none;
+}`;
+
+    let debounceTimer;
+    const editor = document.getElementById('editor');
+    
+    function parseFrontmatter(text) {
+      const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+      if (!match) return { frontmatter: {}, content: text };
+      
+      try {
+        const frontmatter = window.jsyaml.load(match[1]);
+        return { frontmatter, content: match[2] };
+      } catch (e) {
+        console.error('Frontmatter parse error:', e);
+        return { frontmatter: {}, content: text };
+      }
+    }
+
+    function postProcessHTML(html) {
+      const toBlock = (t, d) => `
+<div class="project-header">
+  <div class="project-title">
+    <p>${t.trim()}</p>
+  </div>
+  <div class="project-date">${d.trim()}</div>
+</div>`;
+
+      let out = html;
+      out = out.replace(/<p>(<a href="[^"]*">.*?<\/a>)\n~\s*([^]*?)<\/p>/g, (_, t, d) => toBlock(t, d));
+      out = out.replace(/<p>(<strong><a href="[^"]*">.*?<\/a>,<\/strong> <em>.*?<\/em>)\n~\s*([^]*?)<\/p>/g, (_, t, d) => toBlock(t, d));
+      out = out.replace(/<p>(<strong>[^<]*?,<\/strong> <em><a href="[^"]*">.*?<\/a><\/em>)\n~\s*([^]*?)<\/p>/g, (_, t, d) => toBlock(t, d));
+      out = out.replace(/<p>(<strong>[^<]*?,<\/strong> <em>[^<]*?<\/em>)\n~\s*([^]*?)<\/p>/g, (_, t, d) => toBlock(t, d));
+      out = out.replace(/<p>(<strong>[^<]*?,<\/strong>)\n~\s*([^]*?)<\/p>/g, (_, t, d) => toBlock(t, d));
+      
+      return out;
+    }
+
+    function generateHeader(fm) {
+      if (!fm || !fm.name || !Array.isArray(fm.header)) return '';
+      
+      const items = fm.header.map((item, i) => {
+        const isLast = i === fm.header.length - 1;
+        const cls = isLast ? 'resume-header-item no-separator' : 'resume-header-item';
+        if (item.link) {
+          return `<span class="${cls}">
+      <a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.text}</a>
+    </span>`;
+        }
+        return `<span class="${cls}">
+      ${item.text}
+    </span>`;
+      }).join('\n');
+
+      return `<div class="resume-header"><h1>${fm.name}</h1>\n${items}</div>`;
+    }
+
+    function generateAdditionalStyles(opts) {
+      return `
+    <style>
+      #resume-preview [data-scope="vue-smart-pages"][data-part="page"] {
+        font-family: 'Noto Sans Arabic', sans-serif;
+        font-size: ${opts.fontSize} !important;
+        line-height: ${opts.lineHeight}; !important;
+        color: black;
+      }
+
+      #resume-preview p {
+        margin-bottom: 5px;
+      }
+
+      @page {
+        margin: ${opts.marginTop} ${opts.marginRight} ${opts.marginBottom} ${opts.marginLeft};
+      }
+    </style>`;
+    }
+
+    function buildHTML(fm, contentHTML, opts) {
+      const headerHTML = generateHeader(fm);
+      const additional = generateAdditionalStyles(opts);
+      const title = fm.name || 'CV';
+      
+      return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"><\/script>
+    <style>
+      ${BASE_CSS}
+    </style>
+    ${additional}
+  </head>
+  <body>
+    <div class="resume-render" id="resume-preview">
+      <div data-scope="vue-smart-pages" data-part="page">
+        ${headerHTML} ${contentHTML}
+      </div>
+    </div>
+  </body>
+</html>`;
+    }
+
+    function updatePreview() {
+      const text = editor.value;
+      const { frontmatter, content } = parseFrontmatter(text);
+      
+      const md = window.markdownit({
+        html: true,
+        linkify: true,
+        typographer: true
+      });
+      
+      const contentHTML = postProcessHTML(md.render(content));
+      const headerHTML = generateHeader(frontmatter);
+      
+      const opts = {
+        fontSize: document.getElementById('fontSize').value,
+        lineHeight: document.getElementById('lineHeight').value,
+        marginTop: document.getElementById('marginTop').value,
+        marginBottom: document.getElementById('marginBottom').value,
+        marginLeft: document.getElementById('marginLeft').value,
+        marginRight: document.getElementById('marginRight').value
+      };
+      
+      const additional = generateAdditionalStyles(opts);
+      
+      document.getElementById('preview').innerHTML = `
+        <style>${BASE_CSS}</style>
+        ${additional}
+        <div class="resume-render" id="resume-preview">
+          <div data-scope="vue-smart-pages" data-part="page">
+            ${headerHTML}
+            ${contentHTML}
+          </div>
+        </div>
+      `;
+      
+      if (window.Iconify) {
+        window.Iconify.scan();
+      }
+    }
+
+    async function downloadPDF() {
+      const text = editor.value;
+      const { frontmatter, content } = parseFrontmatter(text);
+      
+      const md = window.markdownit({
+        html: true,
+        linkify: true,
+        typographer: true
+      });
+      
+      const contentHTML = postProcessHTML(md.render(content));
+      
+      const opts = {
+        fontSize: document.getElementById('fontSize').value,
+        lineHeight: document.getElementById('lineHeight').value,
+        marginTop: document.getElementById('marginTop').value,
+        marginBottom: document.getElementById('marginBottom').value,
+        marginLeft: document.getElementById('marginLeft').value,
+        marginRight: document.getElementById('marginRight').value
+      };
+      
+      const html = buildHTML(frontmatter, contentHTML, opts);
+      
+      const w = window.open('', '_blank');
+      if (!w) {
+        alert('Pop-up blocked. Please allow pop-ups to download the PDF.');
+        return;
+      }
+      
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+      
+      await new Promise(r => w.onload ? w.onload = r : setTimeout(r, 300));
+      
+      if (w.document.fonts && w.document.fonts.ready) {
+        await w.document.fonts.ready.catch(() => {});
+      }
+      
+      if (w.Iconify) {
+        await new Promise(r => setTimeout(r, 500));
+      }
+      
+      w.focus();
+      w.print();
+    }
+
+    function saveToStorage() {
+      const data = {
+        content: editor.value,
+        fontSize: document.getElementById('fontSize').value,
+        lineHeight: document.getElementById('lineHeight').value,
+        marginTop: document.getElementById('marginTop').value,
+        marginBottom: document.getElementById('marginBottom').value,
+        marginLeft: document.getElementById('marginLeft').value,
+        marginRight: document.getElementById('marginRight').value
+      };
+      localStorage.setItem('cv_data', JSON.stringify(data));
+      alert('✅ Saved to browser storage!');
+    }
+
+    function loadFromStorage() {
+      const saved = localStorage.getItem('cv_data');
+      if (!saved) {
+        alert('No saved data found');
+        return;
+      }
+      const data = JSON.parse(saved);
+      editor.value = data.content;
+      document.getElementById('fontSize').value = data.fontSize;
+      document.getElementById('lineHeight').value = data.lineHeight;
+      document.getElementById('marginTop').value = data.marginTop;
+      document.getElementById('marginBottom').value = data.marginBottom;
+      document.getElementById('marginLeft').value = data.marginLeft;
+      document.getElementById('marginRight').value = data.marginRight;
+      updatePreview();
+      alert('✅ Loaded from storage!');
+    }
+
+    function resetToDefault() {
+      if (confirm('Reset to default CV? This will lose unsaved changes.')) {
+        editor.value = DEFAULT_CV;
+        document.getElementById('fontSize').value = '13px';
+        document.getElementById('lineHeight').value = '1.12';
+        document.getElementById('marginTop').value = '25px';
+        document.getElementById('marginBottom').value = '30px';
+        document.getElementById('marginLeft').value = '40px';
+        document.getElementById('marginRight').value = '40px';
+        updatePreview();
+      }
+    }
+
+    editor.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(updatePreview, 300);
+    });
+
+    // Initialize
+    const saved = localStorage.getItem('cv_data');
+    if (saved) {
+      loadFromStorage();
+    } else {
+      editor.value = DEFAULT_CV;
+      updatePreview();
+    }
+  </script>
+</body>
+</html>
