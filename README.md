@@ -1,6 +1,6 @@
-# CV Generator (React + Vite)
+# GimmeCV!
 
-![CV Generator](./images/icon.png)
+![CV Generator](./images/icon.png){ width=100 height=100 }
 
 A fast, client‑side CV/Resume generator with a live Markdown editor, pixel‑perfect preview, and one‑click PDF via your browser. Built with React + Vite and designed to preserve the original output exactly.
 
