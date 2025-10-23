@@ -2,7 +2,7 @@ import { parseFrontmatter, postProcessHTML } from "../utils/cvParser";
 import { buildHTML } from "../utils/htmlBuilder";
 import { saveToStorage, loadFromStorage } from "../utils/storage";
 import { DEFAULT_CV } from "../utils/constants";
-import { Download, Save, Upload, RotateCcw } from "lucide-react";
+import { Download, Save, Upload, RotateCcw, Github } from "lucide-react";
 import IconImage from "../../images/icon.png";
 
 export default function Toolbar({
@@ -179,6 +179,24 @@ export default function Toolbar({
             onChange={(e) => handleOptionChange("marginRight", e.target.value)}
           />
         </label>
+      </div>
+      <div className="toolbar-group" style={{ marginLeft: "auto" }}>
+        <a
+          href="https://github.com/Creative-Geek/GimmeCV"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn"
+          title="View on GitHub"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "5px",
+            textDecoration: "none",
+          }}
+        >
+          <Github size={16} />
+          <span>GitHub</span>
+        </a>
       </div>
     </div>
   );
