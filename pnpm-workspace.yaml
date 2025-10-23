@@ -1,9 +1,0 @@
-packages:
-  - .
-
-# Limit running of lifecycle scripts (pre/postinstall/build) to these deps only.
-# This speeds up serverless/CI builds while keeping needed binaries (e.g., esbuild).
-onlyBuiltDependencies:
-  - esbuild
-  - react-tsparticles
-  - tsparticles-engine
