@@ -1,28 +1,9 @@
 import { parseFrontmatter, postProcessHTML } from "../utils/cvParser";
-import { generateHeader, buildHTML } from "../utils/htmlBuilder";
+import { buildHTML } from "../utils/htmlBuilder";
 import { saveToStorage, loadFromStorage } from "../utils/storage";
 import { DEFAULT_CV } from "../utils/constants";
 import { Download, Save, Upload, RotateCcw } from "lucide-react";
 import IconImage from "../../images/icon.png";
-
-// Parse value like "13px" into number and unit
-const parseValue = (value) => {
-  const match = value.match(/^([\d.]+)(px|em|pt|%)$/);
-  if (match) {
-    return { num: parseFloat(match[1]), unit: match[2] };
-  }
-  return { num: 13, unit: "px" }; // fallback
-};
-
-// Reconstruct value from number and unit
-const formatValue = (num, unit) => `${num}${unit}`;
-
-// Constrain numeric input
-const constrain = (value, min, max) => {
-  const num = parseFloat(value);
-  if (isNaN(num)) return min;
-  return Math.max(min, Math.min(max, num));
-};
 
 export default function Toolbar({
   content,
@@ -30,14 +11,8 @@ export default function Toolbar({
   onOptionsChange,
   onContentChange,
 }) {
-  const handleNumericChange = (key, newNum) => {
-    const { num: _, unit } = parseValue(options[key]);
-    onOptionsChange({ ...options, [key]: formatValue(newNum, unit) });
-  };
-
-  const handleUnitChange = (key, newUnit) => {
-    const { num } = parseValue(options[key]);
-    onOptionsChange({ ...options, [key]: formatValue(num, newUnit) });
+  const handleOptionChange = (key, value) => {
+    onOptionsChange({ ...options, [key]: value });
   };
 
   const downloadPDF = async () => {
@@ -123,49 +98,13 @@ export default function Toolbar({
     }
   };
 
-  // Helper component for numeric input with unit
-  const NumericInput = ({
-    label,
-    optionKey,
-    min = 0,
-    max = 100,
-    step = 0.1,
-  }) => {
-    const { num, unit } = parseValue(options[optionKey]);
-
-    return (
-      <label className="numeric-input-group">
-        <span className="label-text">{label}:</span>
-        <input
-          type="number"
-          min={min}
-          max={max}
-          step={step}
-          value={num}
-          onChange={(e) =>
-            handleNumericChange(optionKey, constrain(e.target.value, min, max))
-          }
-          className="numeric-input"
-        />
-        <select
-          value={unit}
-          onChange={(e) => handleUnitChange(optionKey, e.target.value)}
-          className="unit-select"
-        >
-          <option value="px">px</option>
-          <option value="em">em</option>
-          <option value="pt">pt</option>
-          <option value="%">%</option>
-        </select>
-      </label>
-    );
-  };
-
   return (
     <div className="toolbar">
       <div className="toolbar-group">
         <img src={IconImage} alt="CV Generator" className="toolbar-icon" />
-        <div>GimmeCV</div>
+        <div>
+          <strong style={{ marginRight: "5px" }}>GimmeCV</strong>
+        </div>
         <button
           className="btn btn-success"
           onClick={downloadPDF}
@@ -192,48 +131,54 @@ export default function Toolbar({
         </button>
       </div>
       <div className="toolbar-group">
-        <NumericInput
-          label="Font"
-          optionKey="fontSize"
-          min={8}
-          max={32}
-          step={0.5}
-        />
-        <NumericInput
-          label="Line"
-          optionKey="lineHeight"
-          min={0.8}
-          max={2.5}
-          step={0.05}
-        />
-        <NumericInput
-          label="Top"
-          optionKey="marginTop"
-          min={0}
-          max={100}
-          step={1}
-        />
-        <NumericInput
-          label="Bottom"
-          optionKey="marginBottom"
-          min={0}
-          max={100}
-          step={1}
-        />
-        <NumericInput
-          label="Left"
-          optionKey="marginLeft"
-          min={0}
-          max={100}
-          step={1}
-        />
-        <NumericInput
-          label="Right"
-          optionKey="marginRight"
-          min={0}
-          max={100}
-          step={1}
-        />
+        <label>
+          Font:{" "}
+          <input
+            type="text"
+            value={options.fontSize}
+            onChange={(e) => handleOptionChange("fontSize", e.target.value)}
+          />
+        </label>
+        <label>
+          Line:{" "}
+          <input
+            type="text"
+            value={options.lineHeight}
+            onChange={(e) => handleOptionChange("lineHeight", e.target.value)}
+          />
+        </label>
+        <label>
+          Top:{" "}
+          <input
+            type="text"
+            value={options.marginTop}
+            onChange={(e) => handleOptionChange("marginTop", e.target.value)}
+          />
+        </label>
+        <label>
+          Bottom:{" "}
+          <input
+            type="text"
+            value={options.marginBottom}
+            onChange={(e) => handleOptionChange("marginBottom", e.target.value)}
+          />
+        </label>
+        <label>
+          Left:{" "}
+          <input
+            type="text"
+            value={options.marginLeft}
+            onChange={(e) => handleOptionChange("marginLeft", e.target.value)}
+          />
+        </label>
+        <label>
+          Right:{" "}
+          <input
+            type="text"
+            value={options.marginRight}
+            onChange={(e) => handleOptionChange("marginRight", e.target.value)}
+          />
+        </label>
       </div>
     </div>
   );

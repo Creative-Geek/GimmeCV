@@ -60,7 +60,7 @@ export function buildHTML(fm, contentHTML, opts) {
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"><\/script>
+  <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
     <style>
       ${BASE_CSS}
     </style>
