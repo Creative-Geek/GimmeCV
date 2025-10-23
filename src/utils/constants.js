@@ -189,8 +189,7 @@ export const BASE_CSS = `#resume-preview [data-scope="vue-smart-pages"][data-par
   color: #333333;
 }
 
-#resume-preview h3,
-#resume-preview p > strong:first-child {
+#resume-preview h3 {
   margin-top: 6px;
   margin-bottom: 6px;
   display: block;
