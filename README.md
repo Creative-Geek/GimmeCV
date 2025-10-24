@@ -10,10 +10,11 @@ A fast, client‑side CV/Resume generator with a live Markdown editor, pixel‑p
 ## Highlights
 
 - Live Markdown editor with YAML frontmatter for header content
-- Pixel‑perfect preview that matches the original app’s output
+- Pixel‑perfect preview that matches the original app's output
 - A4 preview page with adjustable margins (visual only; print margins remain browser‑controlled)
 - Clean, modern UI with glass toolbar and icon buttons
 - Local save/load (browser storage) and one‑click PDF
+- URL sharing - Generate shareable links with CV data embedded
 - Subtle parallax background (black dots + lines on white) that does not affect print/PDF
 
 ## Quick start
@@ -43,10 +44,11 @@ pnpm run preview
 
 ## Controls (Toolbar)
 
-- PDF: Opens the print dialog and uses your browser’s “Save as PDF”.
-- Save / Load: Stores/loads your content and layout settings from browser storage.
-- Reset: Restores the default CV template and layout.
-- Font size, line height, and margins: Use number + unit pickers with safe constraints.
+- **PDF**: Opens the print dialog and uses your browser's "Save as PDF".
+- **Generate URL**: Creates a shareable link with CV data compressed and embedded in the URL fragment.
+- **Save / Load**: Stores/loads your content and layout settings from browser storage.
+- **Reset**: Restores the default CV template and layout.
+- **Font size, line height, and margins**: Use number + unit pickers with safe constraints.
 
 Notes on margins and PDF:
 
@@ -57,6 +59,7 @@ Notes on margins and PDF:
 
 - React + Vite
 - markdown-it (Markdown), js-yaml (frontmatter), Iconify (icons in content)
+- pako (compression for URL sharing)
 - lucide-react (toolbar icons)
 - react-tsparticles + tsparticles‑slim (parallax background; hidden on print)
 
@@ -74,6 +77,7 @@ src/
     cvParser.js               # Frontmatter parsing + HTML post‑processing
     htmlBuilder.js            # HTML builders for preview and print window
     storage.js                # LocalStorage helpers
+    urlEncoding.js            # URL compression/decompression for sharing
   App.jsx
   App.css
   main.jsx

@@ -2,8 +2,9 @@ import { parseFrontmatter, postProcessHTML } from "../utils/cvParser";
 import { buildHTML } from "../utils/htmlBuilder";
 import { saveToStorage, loadFromStorage } from "../utils/storage";
 import { DEFAULT_CV } from "../utils/constants";
-import { Download, Save, Upload, RotateCcw, Github } from "lucide-react";
+import { Download, Save, Upload, RotateCcw, Github, Link } from "lucide-react";
 import IconImage from "../../images/icon.png";
+import { generateShareableUrl, validateUrlLength } from "../utils/urlEncoding";
 
 export default function Toolbar({
   content,
@@ -98,6 +99,40 @@ export default function Toolbar({
     }
   };
 
+  const handleGenerateUrl = () => {
+    try {
+      const result = generateShareableUrl(content);
+      const validation = validateUrlLength(result.url);
+
+      // Show stats
+      let message = `✅ Shareable URL Generated!\n\n`;
+      message += `📊 Stats:\n`;
+      message += `• Original size: ${result.originalLength} chars\n`;
+      message += `• Compressed: ${result.encodedLength} chars\n`;
+      message += `• Compression: ${result.compressionRatio}\n`;
+      message += `• Total URL: ${result.totalUrlLength} chars\n\n`;
+
+      if (validation.warning) {
+        message += `⚠️ ${validation.warning}\n\n`;
+      }
+
+      message += `The URL has been copied to your clipboard!`;
+
+      // Copy to clipboard
+      navigator.clipboard
+        .writeText(result.url)
+        .then(() => {
+          alert(message);
+        })
+        .catch(() => {
+          // Fallback if clipboard API fails
+          prompt("Copy this URL:", result.url);
+        });
+    } catch (error) {
+      alert(`❌ Failed to generate URL: ${error.message}`);
+    }
+  };
+
   return (
     <div className="toolbar">
       <div className="toolbar-group">
@@ -112,6 +147,14 @@ export default function Toolbar({
         >
           <Download size={16} />
           <span>PDF</span>
+        </button>
+        <button
+          className="btn btn-primary"
+          onClick={handleGenerateUrl}
+          title="Generate shareable URL with embedded data"
+        >
+          <Link size={16} />
+          <span>Generate URL</span>
         </button>
         <button className="btn" onClick={handleSave} title="Save to browser">
           <Save size={16} />
