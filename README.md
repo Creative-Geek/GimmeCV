@@ -1,11 +1,15 @@
 <div align="center">
   <h1>GimmeCV</h1>
-  <img src="./images/icon.png" alt="GimmeCV" width="100" height="100" />
+  <img src="./images/icon.png" alt="GimmeCV" width="200" height="200" />
 </div>
 
 A fast, client‑side CV/Resume generator with a live Markdown editor, pixel‑perfect preview, and one‑click PDF via your browser. Built with React + Vite and designed to preserve the original output exactly.
 
 ![GimmeCV preview](./images/screenshot.png)
+
+<div align="center">
+  <a href="https://gimmecv.creative-geek.tech">Try it -> https://gimmecv.creative-geek.tech/</a>
+</div>
 
 ## Highlights
 
