@@ -187,11 +187,40 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.75);
+  background: white;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+}
+
+.editor-content {
+  flex: 1;
+  overflow: hidden;
+  /* Override MDEditor default border */
+}
+
+.w-md-editor {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.w-md-editor-toolbar {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.55) !important;
+  padding: 4px 8px !important;
+}
+
+.w-md-editor-toolbar li > button {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 6px !important;
+  margin: 0 2px !important;
+}
+
+.w-md-editor-toolbar li > button svg {
+  width: 18px !important;
+  height: 18px !important;
 }
 
 .editor-header {
@@ -203,18 +232,6 @@ body {
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-}
-
-.editor {
-  flex: 1;
-  padding: 15px;
-  border: none;
-  font-family: "Courier New", monospace;
-  font-size: 13px;
-  line-height: 1.5;
-  resize: none;
-  outline: none;
-  background: transparent;
 }
 
 .preview-panel {

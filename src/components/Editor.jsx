@@ -1,27 +1,45 @@
-import { useRef, useEffect } from "react";
+import MDEditor, { commands } from "@uiw/react-md-editor";
 
 export default function Editor({ content, onChange }) {
-  const textareaRef = useRef(null);
-
-  useEffect(() => {
-    if (textareaRef.current && textareaRef.current.value !== content) {
-      textareaRef.current.value = content;
-    }
-  }, [content]);
-
-  const handleChange = (e) => {
-    onChange(e.target.value);
-  };
-
   return (
-    <div className="editor-panel">
+    <div className="editor-panel" data-color-mode="light">
       <div className="editor-header">Markdown Editor</div>
-      <textarea
-        ref={textareaRef}
-        className="editor"
-        spellCheck="false"
-        onChange={handleChange}
-      />
+      <div className="editor-content">
+        <MDEditor
+          value={content}
+          onChange={onChange}
+          preview="edit"
+          height="100%"
+          visibleDragbar={false}
+          commands={[
+            commands.group(
+              [
+                commands.title1,
+                commands.title2,
+                commands.title3,
+                commands.title4,
+                commands.title5,
+                commands.title6,
+              ],
+              {
+                name: "title",
+                groupName: "title",
+                buttonProps: { "aria-label": "Insert title" },
+              }
+            ),
+            commands.bold,
+            commands.italic,
+            commands.divider,
+            commands.link,
+            commands.divider,
+            commands.unorderedListCommand,
+            commands.orderedListCommand,
+            commands.divider,
+            commands.hr,
+          ]}
+          extraCommands={[]}
+        />
+      </div>
     </div>
   );
 }
