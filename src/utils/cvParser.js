@@ -3,7 +3,15 @@ export function parseFrontmatter(text) {
   if (!match) return { frontmatter: {}, content: text };
 
   try {
-    const frontmatter = window.jsyaml.load(match[1]);
+    // Normalize indentation:
+    // 1. Replace tabs with 2 spaces
+    // 2. Replace 4 spaces followed by a dash with 2 spaces followed by a dash AND A SPACE
+    //    This fixes "full tap" indentation AND missing space syntax (e.g. "-text" -> "- text")
+    const rawFrontmatter = match[1]
+      .replace(/\t/g, "  ")
+      .replace(/^    -/gm, "  - ");
+
+    const frontmatter = window.jsyaml.load(rawFrontmatter);
     return { frontmatter, content: match[2] };
   } catch (e) {
     console.error("Frontmatter parse error:", e);

@@ -11,6 +11,7 @@ export default function Editor({ content, onChange }) {
           preview="edit"
           height="100%"
           visibleDragbar={false}
+          tabSize={2}
           commands={[
             commands.group(
               [
