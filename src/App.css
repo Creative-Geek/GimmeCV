@@ -254,6 +254,7 @@ body {
   padding: 0;
   position: relative;
   page-break-after: always;
+  overflow: hidden;
 }
 
 .preview-page-content {

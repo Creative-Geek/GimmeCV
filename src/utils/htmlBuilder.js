@@ -23,29 +23,50 @@ export function generateHeader(fm) {
   return `<div class="resume-header"><h1>${fm.name}</h1>\n${items}</div>`;
 }
 
-export function generateAdditionalStyles(opts) {
-  return `
+export function generateAdditionalStyles(opts, isExport = false) {
+  let styles = `
     <style>
       #resume-preview [data-scope="vue-smart-pages"][data-part="page"] {
         font-family: 'Noto Sans Arabic', sans-serif;
         font-size: ${opts.fontSize} !important;
-        line-height: ${opts.lineHeight}; !important;
+        line-height: ${opts.lineHeight} !important;
         color: black;
       }
 
       #resume-preview p {
         margin-bottom: 5px;
       }
+  `;
 
+  if (isExport) {
+    styles += `
+      /* Export-specific overrides to match preview exactly but allow flexibility */
       @page {
-        margin: ${opts.marginTop} ${opts.marginRight} ${opts.marginBottom} ${opts.marginLeft};
+        margin: 0;
       }
-    </style>`;
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    `;
+  }
+
+  styles += `</style>`;
+  return styles;
 }
 
 export function buildHTML(fm, contentHTML, opts) {
   const headerHTML = generateHeader(fm);
-  const additional = generateAdditionalStyles(opts);
+  const additional = generateAdditionalStyles(opts, true);
   const title = fm.name || "CV";
 
   return `<!DOCTYPE html>
@@ -69,7 +90,9 @@ export function buildHTML(fm, contentHTML, opts) {
   <body>
     <div class="resume-render" id="resume-preview">
       <div data-scope="vue-smart-pages" data-part="page">
-        ${headerHTML} ${contentHTML}
+        <div style="padding: ${opts.marginTop} ${opts.marginRight} ${opts.marginBottom} ${opts.marginLeft};">
+          ${headerHTML} ${contentHTML}
+        </div>
       </div>
     </div>
   </body>
@@ -77,7 +100,7 @@ export function buildHTML(fm, contentHTML, opts) {
 }
 
 export function generatePreviewHTML(headerHTML, contentHTML, opts) {
-  const additional = generateAdditionalStyles(opts);
+  const additional = generateAdditionalStyles(opts, false);
 
   return `
     <style>${BASE_CSS}</style>
