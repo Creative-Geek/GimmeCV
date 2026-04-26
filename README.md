@@ -8,7 +8,7 @@ A fast, client‑side CV/Resume generator with a live Markdown editor, pixel‑p
 ![GimmeCV preview](./images/screenshot.png)
 
 <div align="center">
-  <a href="https://gimmecv.creative-geek.tech">Try it -> https://gimmecv.creative-geek.tech/</a>
+  <a href="https://gimmecv.creativegeek.net">Try it -> https://gimmecv.creativegeek.net</a>
 </div>
 
 ## Highlights
