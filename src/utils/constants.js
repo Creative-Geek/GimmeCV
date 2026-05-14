@@ -102,7 +102,11 @@ export const BASE_CSS = `#resume-preview [data-scope="vue-smart-pages"][data-par
 
 #resume-preview h2 {
   border-bottom-style: solid;
-  border-bottom-width: 1px;
+  border-bottom-width: 2px;
+  padding-bottom: 2px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
 
 #resume-preview ul,
@@ -124,8 +128,8 @@ export const BASE_CSS = `#resume-preview [data-scope="vue-smart-pages"][data-par
 }
 
 #resume-preview dl dt,
-#resume-preview dl dd:not(:last-child) {
-  flex: 1;
+#resume-preview dl dd {
+  flex: none;
 }
 
 #resume-preview svg.iconify {
@@ -144,18 +148,6 @@ export const BASE_CSS = `#resume-preview [data-scope="vue-smart-pages"][data-par
   text-align: center;
   line-height: 1;
   margin-bottom: 8px;
-}
-
-#resume-preview .resume-header-item:not(.no-separator)::after {
-  content: " | ";
-}
-
-#resume-preview h2 {
-  text-transform: uppercase;
-  border-bottom-width: 2px;
-  padding-bottom: 2px;
-  margin-top: 6px;
-  margin-bottom: 6px;
 }
 
 #resume-preview .resume-header-item:not(.no-separator)::after {

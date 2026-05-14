@@ -20,12 +20,17 @@ const path = require("path");
  */
 function generateGimmeCVUrl(
   markdownCV,
-  baseUrl = "https://your-gimmecv-instance.com"
+  baseUrl = "https://your-gimmecv-instance.com",
+  options = null,
 ) {
-  // Step 1: Convert string to bytes
-  const textBytes = Buffer.from(markdownCV, "utf-8");
+  // Step 1: Build the payload
+  // Pass options to embed layout config (v2). Omit or pass null for v1 (content-only).
+  const payload = options
+    ? JSON.stringify({ v: 2, c: markdownCV, o: options })
+    : markdownCV;
 
-  // Step 2: Compress with zlib (maximum compression)
+  // Step 2: Convert to bytes and compress with zlib
+  const textBytes = Buffer.from(payload, "utf-8");
   const compressed = pako.deflate(textBytes, { level: 9 });
 
   // Step 3: Convert to Base64
@@ -142,11 +147,11 @@ console.log(`   • Total URL length: ${result.totalUrlLength} characters\n`);
 
 if (result.totalUrlLength > 100000) {
   console.log(
-    "⚠️  WARNING: URL exceeds 100KB - may not work in most browsers\n"
+    "⚠️  WARNING: URL exceeds 100KB - may not work in most browsers\n",
   );
 } else if (result.totalUrlLength > 50000) {
   console.log(
-    "⚠️  WARNING: URL exceeds 50KB - may not work in older browsers\n"
+    "⚠️  WARNING: URL exceeds 50KB - may not work in older browsers\n",
   );
 } else if (result.totalUrlLength > 32000) {
   console.log("✓ URL is large but should work in modern browsers\n");

@@ -12,6 +12,9 @@ export default function Toolbar({
   onOptionsChange,
   onContentChange,
 }) {
+  const validateCssValue = (value) =>
+    /^\d+(\.\d+)?(px|em|rem|%|pt)?$/.test(value);
+
   const handleOptionChange = (key, value) => {
     onOptionsChange({ ...options, [key]: value });
   };
@@ -39,7 +42,17 @@ export default function Toolbar({
     w.document.write(html);
     w.document.close();
 
-    await new Promise((r) => (w.onload ? (w.onload = r) : setTimeout(r, 300)));
+    await new Promise((resolve) => {
+      if (w.document.readyState === "complete") {
+        resolve();
+        return;
+      }
+
+      w.addEventListener("load", () => resolve(), { once: true });
+
+      // Fallback timeout in case the load event doesn't fire
+      setTimeout(resolve, 1000);
+    });
 
     if (w.document.fonts && w.document.fonts.ready) {
       await w.document.fonts.ready.catch(() => {});
@@ -67,21 +80,26 @@ export default function Toolbar({
     alert("✅ Saved to browser storage!");
   };
 
+  const DEFAULT_OPTIONS = {
+    fontSize: "13px",
+    lineHeight: "1.12",
+    marginTop: "25px",
+    marginBottom: "0px",
+    marginLeft: "40px",
+    marginRight: "40px",
+  };
+
   const handleLoad = () => {
+    if (!confirm("This will discard your current changes. Continue?")) {
+      return;
+    }
     const saved = loadFromStorage();
     if (!saved) {
       alert("No saved data found");
       return;
     }
     onContentChange(saved.content);
-    onOptionsChange({
-      fontSize: saved.fontSize,
-      lineHeight: saved.lineHeight,
-      marginTop: saved.marginTop,
-      marginBottom: saved.marginBottom,
-      marginLeft: saved.marginLeft,
-      marginRight: saved.marginRight,
-    });
+    onOptionsChange({ ...DEFAULT_OPTIONS, ...saved });
     alert("✅ Loaded from storage!");
   };
 
@@ -101,7 +119,7 @@ export default function Toolbar({
 
   const handleGenerateUrl = () => {
     try {
-      const result = generateShareableUrl(content);
+      const result = generateShareableUrl({ content, options });
       const validation = validateUrlLength(result.url);
 
       // Show stats
@@ -160,9 +178,13 @@ export default function Toolbar({
           <Save size={16} />
           <span>Save</span>
         </button>
-        <button className="btn" onClick={handleLoad} title="Load from browser">
+        <button
+          className="btn"
+          onClick={handleLoad}
+          title="Revert to last save, discarding current changes"
+        >
           <Upload size={16} />
-          <span>Load</span>
+          <span>Revert</span>
         </button>
         <button
           className="btn btn-danger"
@@ -180,6 +202,9 @@ export default function Toolbar({
             type="text"
             value={options.fontSize}
             onChange={(e) => handleOptionChange("fontSize", e.target.value)}
+            className={
+              validateCssValue(options.fontSize) ? "" : "input-invalid"
+            }
           />
         </label>
         <label>
@@ -188,6 +213,9 @@ export default function Toolbar({
             type="text"
             value={options.lineHeight}
             onChange={(e) => handleOptionChange("lineHeight", e.target.value)}
+            className={
+              /^\d+(\.\d+)?$/.test(options.lineHeight) ? "" : "input-invalid"
+            }
           />
         </label>
         <label>
@@ -196,6 +224,9 @@ export default function Toolbar({
             type="text"
             value={options.marginTop}
             onChange={(e) => handleOptionChange("marginTop", e.target.value)}
+            className={
+              validateCssValue(options.marginTop) ? "" : "input-invalid"
+            }
           />
         </label>
         <label>
@@ -204,6 +235,9 @@ export default function Toolbar({
             type="text"
             value={options.marginBottom}
             onChange={(e) => handleOptionChange("marginBottom", e.target.value)}
+            className={
+              validateCssValue(options.marginBottom) ? "" : "input-invalid"
+            }
           />
         </label>
         <label>
@@ -212,6 +246,9 @@ export default function Toolbar({
             type="text"
             value={options.marginLeft}
             onChange={(e) => handleOptionChange("marginLeft", e.target.value)}
+            className={
+              validateCssValue(options.marginLeft) ? "" : "input-invalid"
+            }
           />
         </label>
         <label>
@@ -220,6 +257,9 @@ export default function Toolbar({
             type="text"
             value={options.marginRight}
             onChange={(e) => handleOptionChange("marginRight", e.target.value)}
+            className={
+              validateCssValue(options.marginRight) ? "" : "input-invalid"
+            }
           />
         </label>
       </div>

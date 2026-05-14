@@ -16,17 +16,8 @@ export default function BackgroundParticles() {
     fpsLimit: 60,
     detectRetina: true,
     interactivity: {
-      detectsOn: "window",
       events: {
-        onHover: { enable: true, mode: "parallax" },
         resize: true,
-      },
-      modes: {
-        parallax: {
-          enable: true,
-          force: 60,
-          smooth: 10,
-        },
       },
     },
     particles: {

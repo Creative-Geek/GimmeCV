@@ -7,14 +7,31 @@ export default function Preview({ content, options }) {
   const debounceTimerRef = useRef(null);
 
   useEffect(() => {
-    // Clear any existing debounce timer
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
 
-    // Set new debounce timer for 300ms (matching original behavior)
     debounceTimerRef.current = setTimeout(() => {
-      updatePreview();
+      const { frontmatter, content: markdownContent } =
+        parseFrontmatter(content);
+
+      const md = window.markdownit({
+        html: true,
+        linkify: true,
+        typographer: true,
+      });
+
+      const contentHTML = postProcessHTML(md.render(markdownContent));
+      const headerHTML = generateHeader(frontmatter);
+      const previewHTML = generatePreviewHTML(headerHTML, contentHTML, options);
+
+      if (previewRef.current) {
+        previewRef.current.innerHTML = previewHTML;
+
+        if (window.Iconify) {
+          window.Iconify.scan();
+        }
+      }
     }, 300);
 
     return () => {
@@ -23,29 +40,6 @@ export default function Preview({ content, options }) {
       }
     };
   }, [content, options]);
-
-  const updatePreview = () => {
-    const { frontmatter, content: markdownContent } = parseFrontmatter(content);
-
-    const md = window.markdownit({
-      html: true,
-      linkify: true,
-      typographer: true,
-    });
-
-    const contentHTML = postProcessHTML(md.render(markdownContent));
-    const headerHTML = generateHeader(frontmatter);
-
-    const previewHTML = generatePreviewHTML(headerHTML, contentHTML, options);
-
-    if (previewRef.current) {
-      previewRef.current.innerHTML = previewHTML;
-
-      if (window.Iconify) {
-        window.Iconify.scan();
-      }
-    }
-  };
 
   return (
     <div className="preview-panel">

@@ -9,16 +9,18 @@ import { DEFAULT_CV } from "./utils/constants";
 import { loadFromStorage } from "./utils/storage";
 import { loadFromUrlFragment } from "./utils/urlEncoding";
 
+const DEFAULT_OPTIONS = {
+  fontSize: "13px",
+  lineHeight: "1.12",
+  marginTop: "25px",
+  marginBottom: "0px",
+  marginLeft: "40px",
+  marginRight: "40px",
+};
+
 function App() {
   const [content, setContent] = useState(DEFAULT_CV);
-  const [options, setOptions] = useState({
-    fontSize: "13px",
-    lineHeight: "1.12",
-    marginTop: "25px",
-    marginBottom: "0px",
-    marginLeft: "40px",
-    marginRight: "40px",
-  });
+  const [options, setOptions] = useState(DEFAULT_OPTIONS);
   const [urlLoadError, setUrlLoadError] = useState(null);
 
   useEffect(() => {
@@ -27,16 +29,17 @@ function App() {
       const urlData = loadFromUrlFragment();
       if (urlData) {
         console.log("✅ Loaded CV data from URL fragment");
-        setContent(urlData);
-        // Clear the URL fragment after loading to prevent confusion
-        // window.history.replaceState(null, '', window.location.pathname);
+        setContent(urlData.content);
+        if (urlData.options) {
+          setOptions({ ...DEFAULT_OPTIONS, ...urlData.options });
+        }
+        // Clear the URL fragment so a refresh doesn't re-load from it
+        window.history.replaceState(null, "", window.location.pathname);
         return; // Don't load from localStorage if URL data exists
       }
     } catch (error) {
       console.error("❌ Failed to load data from URL:", error);
-      setUrlLoadError(
-        "Failed to load CV data from URL. The link may be corrupted or invalid."
-      );
+      setUrlLoadError(error.message);
     }
 
     // Priority 2: Load from localStorage (user's saved work)
@@ -44,14 +47,7 @@ function App() {
     if (saved) {
       console.log("📦 Loaded CV data from localStorage");
       setContent(saved.content);
-      setOptions({
-        fontSize: saved.fontSize,
-        lineHeight: saved.lineHeight,
-        marginTop: saved.marginTop,
-        marginBottom: saved.marginBottom,
-        marginLeft: saved.marginLeft,
-        marginRight: saved.marginRight,
-      });
+      setOptions({ ...DEFAULT_OPTIONS, ...saved });
     }
   }, []);
 

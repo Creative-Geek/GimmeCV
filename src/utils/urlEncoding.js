@@ -23,22 +23,29 @@ function base64UrlToBase64(base64Url) {
 }
 
 /**
- * Encodes text data for URL fragment
- * Steps: compress with zlib → convert to Base64 → make URL-safe
+ * Encodes data for URL fragment.
+ * Steps: JSON-serialize → compress with zlib → convert to Base64 → make URL-safe.
  *
- * @param {string} text - The text to encode (e.g., Markdown CV content)
- * @returns {string} - Base64URL encoded compressed string
+ * @param {string|{content: string, options: object}} text - Plain CV text (v1 compat) or
+ *   an object with {content, options} to embed layout config (v2).
+ * @returns {string} - Base64URL encoded compressed string.
  */
 export function encodeForUrl(text) {
   try {
-    // Step 1: Convert string to Uint8Array
-    const textEncoder = new TextEncoder();
-    const textBytes = textEncoder.encode(text);
+    // Step 1: Serialize to JSON if needed (v2 format with options)
+    let payload = text;
+    if (typeof text === "object" && text !== null) {
+      payload = JSON.stringify({ v: 2, c: text.content, o: text.options });
+    }
 
-    // Step 2: Compress using zlib (deflate)
+    // Step 2: Convert string to Uint8Array
+    const textEncoder = new TextEncoder();
+    const textBytes = textEncoder.encode(payload);
+
+    // Step 3: Compress using zlib (deflate)
     const compressed = pako.deflate(textBytes, { level: 9 }); // Maximum compression
 
-    // Step 3: Convert compressed bytes to Base64
+    // Step 4: Convert compressed bytes to Base64
     let binary = "";
     const len = compressed.byteLength;
     for (let i = 0; i < len; i++) {
@@ -46,7 +53,7 @@ export function encodeForUrl(text) {
     }
     const base64 = btoa(binary);
 
-    // Step 4: Convert to Base64URL (URL-safe)
+    // Step 5: Convert to Base64URL (URL-safe)
     const base64Url = base64ToBase64Url(base64);
 
     return base64Url;
@@ -57,11 +64,13 @@ export function encodeForUrl(text) {
 }
 
 /**
- * Decodes text data from URL fragment
- * Steps: convert from Base64URL → decode Base64 → decompress with zlib
+ * Decodes data from URL fragment.
+ * Steps: convert from Base64URL → decode Base64 → decompress with zlib.
+ * Returns an object with `{content, options}` where `options` is null for v1 (plain text)
+ * links and a filled object for v2 (JSON object) links.
  *
- * @param {string} encodedData - Base64URL encoded compressed string
- * @returns {string} - Original text
+ * @param {string} encodedData - Base64URL encoded compressed string.
+ * @returns {{content: string, options: object|null}} - Decoded payload.
  */
 export function decodeFromUrl(encodedData) {
   try {
@@ -85,40 +94,56 @@ export function decodeFromUrl(encodedData) {
     const textDecoder = new TextDecoder();
     const text = textDecoder.decode(decompressed);
 
-    return text;
+    // Step 6: Try to parse as v2 JSON object; fall back to raw string (v1)
+    try {
+      const obj = JSON.parse(text);
+      if (obj && typeof obj === "object" && obj.v === 2) {
+        return { content: obj.c, options: obj.o };
+      }
+    } catch {
+      // Not JSON or not v2 — treat as plain text (v1)
+    }
+
+    return { content: text, options: null };
   } catch (error) {
     console.error("Decoding error:", error);
     throw new Error(
-      "Failed to decode data from URL. The data may be corrupted or invalid."
+      "Failed to decode data from URL. The data may be corrupted or invalid.",
     );
   }
 }
 
 /**
- * Generates a complete URL with encoded data in the fragment
+ * Generates a complete URL with encoded data in the fragment.
+ * Accepts either plain CV text (v1, options ignored) or an explicit
+ * `{content, options}` object (v2, includes layout config).
  *
- * @param {string} text - The text to encode
- * @param {string} baseUrl - Base URL of your app (e.g., 'https://yourapp.com')
- * @returns {object} - { url: string, encodedLength: number, originalLength: number, compressionRatio: number }
+ * @param {string|{content: string, options: object}} text - CV data.
+ * @param {string} [baseUrl] - Base URL of your app.
+ * @returns {object} - { url, encodedLength, originalLength, compressionRatio, totalUrlLength }
  */
 export function generateShareableUrl(text, baseUrl = window.location.origin) {
   const encoded = encodeForUrl(text);
   const url = `${baseUrl}/#${encoded}`;
 
+  // originalLength: for v2 we count only the content string for meaningful stats
+  const contentLength =
+    typeof text === "object" ? text.content.length : text.length;
+
   return {
     url,
     encodedLength: encoded.length,
-    originalLength: text.length,
+    originalLength: contentLength,
     compressionRatio:
-      ((1 - encoded.length / text.length) * 100).toFixed(1) + "%",
+      ((1 - encoded.length / contentLength) * 100).toFixed(1) + "%",
     totalUrlLength: url.length,
   };
 }
 
 /**
- * Extracts and decodes data from the current URL fragment
+ * Extracts and decodes data from the current URL fragment.
  *
- * @returns {string|null} - Decoded text or null if no data in URL
+ * @returns {{content: string, options: object|null}|null} - Decoded payload or null if no hash.
  */
 export function loadFromUrlFragment() {
   const hash = window.location.hash;
@@ -140,7 +165,9 @@ export function loadFromUrlFragment() {
     return decodeFromUrl(encodedData);
   } catch (error) {
     console.error("Failed to load data from URL:", error);
-    return null;
+    throw new Error(
+      "Failed to decode data from URL. The data may be corrupted or invalid.",
+    );
   }
 }
 
