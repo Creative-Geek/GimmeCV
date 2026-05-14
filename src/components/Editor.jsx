@@ -1,8 +1,8 @@
 import MDEditor, { commands } from "@uiw/react-md-editor";
 
-export default function Editor({ content, onChange }) {
+export default function Editor({ content, onChange, className = "" }) {
   return (
-    <div className="editor-panel" data-color-mode="light">
+    <div className={`editor-panel ${className}`} data-color-mode="light">
       <div className="editor-header">Markdown Editor</div>
       <div className="editor-content">
         <MDEditor
