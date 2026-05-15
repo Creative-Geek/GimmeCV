@@ -93,6 +93,8 @@
 .toast {
   pointer-events: auto;
   background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: #fff;
   padding: 12px 18px;
   border-radius: 12px;
