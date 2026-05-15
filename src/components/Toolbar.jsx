@@ -139,7 +139,10 @@ export default function Toolbar({
   // ── Revert ──────────────────────────────────────
   const handleRevert = () => {
     setShowMore(false);
-    if (!isDirty) { addToast("No unsaved changes", "warning"); return; }
+    if (!isDirty) {
+      addToast("No unsaved changes", "warning");
+      return;
+    }
     setModalType("revert");
   };
 
@@ -150,7 +153,10 @@ export default function Toolbar({
   };
 
   // ── Reset ───────────────────────────────────────
-  const handleResetClick = () => { setShowMore(false); setModalType("reset"); };
+  const handleResetClick = () => {
+    setShowMore(false);
+    setModalType("reset");
+  };
 
   const confirmReset = () => {
     onReset();
@@ -176,19 +182,29 @@ export default function Toolbar({
   // ── PDF ─────────────────────────────────────────
   const executePrint = useCallback(async () => {
     const { frontmatter, content: markdownContent } = parseFrontmatter(content);
-    const md = window.markdownit({ html: true, linkify: true, typographer: true });
+    const md = window.markdownit({
+      html: true,
+      linkify: true,
+      typographer: true,
+    });
     const contentHTML = postProcessHTML(md.render(markdownContent));
     const html = buildHTML(frontmatter, contentHTML, options);
 
     const w = window.open("", "_blank");
-    if (!w) { addToast("Pop-up blocked — please allow pop-ups", "error"); return; }
+    if (!w) {
+      addToast("Pop-up blocked - please allow pop-ups", "error");
+      return;
+    }
 
     w.document.open();
     w.document.write(html);
     w.document.close();
 
     await new Promise((resolve) => {
-      if (w.document.readyState === "complete") { resolve(); return; }
+      if (w.document.readyState === "complete") {
+        resolve();
+        return;
+      }
       w.addEventListener("load", () => resolve(), { once: true });
       setTimeout(resolve, 1000);
     });
@@ -225,7 +241,9 @@ export default function Toolbar({
           if (validation.warning) msg += ` ${validation.warning}`;
           addToast(msg, validation.warning ? "warning" : "success", 4000);
         })
-        .catch(() => addToast("Failed to copy — check browser permissions", "error"));
+        .catch(() =>
+          addToast("Failed to copy - check browser permissions", "error"),
+        );
     } catch (error) {
       addToast(`${error.message}`, "error");
     }
@@ -256,9 +274,11 @@ export default function Toolbar({
                 onChange={handleSlotChange}
                 title="Switch CV"
               >
-                {!activeSlotId && <option value="">— Unsaved —</option>}
+                {!activeSlotId && <option value="">- Unsaved -</option>}
                 {slotList.map((s) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
                 ))}
               </select>
             )}
@@ -273,7 +293,7 @@ export default function Toolbar({
             )}
           </div>
 
-          {/* Dirty indicator — right after slot */}
+          {/* Dirty indicator - right after slot */}
           {isDirty && (
             <span className="dirty-indicator">
               <span className="dirty-dot" />
@@ -285,11 +305,19 @@ export default function Toolbar({
 
           {/* Primary actions */}
           <div className="toolbar-actions">
-            <button className="btn btn-success" onClick={handleDownloadPDF} title="Download PDF">
+            <button
+              className="btn btn-success"
+              onClick={handleDownloadPDF}
+              title="Download PDF"
+            >
               <Download size={15} />
               <span className="btn-label">PDF</span>
             </button>
-            <button className="btn btn-primary" onClick={handleGenerateUrl} title="Copy shareable link">
+            <button
+              className="btn btn-primary"
+              onClick={handleGenerateUrl}
+              title="Copy shareable link"
+            >
               <Link size={15} />
               <span className="btn-label">Share URL</span>
             </button>
@@ -299,7 +327,10 @@ export default function Toolbar({
             </button>
             <button
               className="btn"
-              onClick={() => { setSaveAsName(""); setModalType("saveAs"); }}
+              onClick={() => {
+                setSaveAsName("");
+                setModalType("saveAs");
+              }}
               title="Save as new CV"
             >
               <FilePlus size={15} />
@@ -325,7 +356,10 @@ export default function Toolbar({
                   <RotateCcw size={14} /> Reset to default
                 </button>
                 {activeSlotId && (
-                  <button className="btn btn-danger" onClick={handleDeleteClick}>
+                  <button
+                    className="btn btn-danger"
+                    onClick={handleDeleteClick}
+                  >
                     <Trash2 size={14} /> Delete this CV
                   </button>
                 )}
@@ -363,12 +397,32 @@ export default function Toolbar({
         {/* ── Row 2: layout options (collapsible) ── */}
         <div className={`toolbar-row2${showLayout ? "" : " hidden"}`}>
           {[
-            { key: "fontSize",     label: "Font size",     validate: validateCssValue },
-            { key: "lineHeight",   label: "Line height",   validate: (v) => /^\d+(\.\d+)?$/.test(v) },
-            { key: "marginTop",    label: "Margin top",    validate: validateCssValue },
-            { key: "marginBottom", label: "Margin bottom", validate: validateCssValue },
-            { key: "marginLeft",   label: "Margin left",   validate: validateCssValue },
-            { key: "marginRight",  label: "Margin right",  validate: validateCssValue },
+            { key: "fontSize", label: "Font size", validate: validateCssValue },
+            {
+              key: "lineHeight",
+              label: "Line height",
+              validate: (v) => /^\d+(\.\d+)?$/.test(v),
+            },
+            {
+              key: "marginTop",
+              label: "Margin top",
+              validate: validateCssValue,
+            },
+            {
+              key: "marginBottom",
+              label: "Margin bottom",
+              validate: validateCssValue,
+            },
+            {
+              key: "marginLeft",
+              label: "Margin left",
+              validate: validateCssValue,
+            },
+            {
+              key: "marginRight",
+              label: "Margin right",
+              validate: validateCssValue,
+            },
           ].map(({ key, label, validate }) => (
             <label key={key}>
               {label}
@@ -431,10 +485,16 @@ export default function Toolbar({
         title="Unsaved Changes"
         actions={[
           { label: "Cancel", onClick: closeModal },
-          { label: "Discard & Switch", onClick: confirmSwitch, variant: "danger" },
+          {
+            label: "Discard & Switch",
+            onClick: confirmSwitch,
+            variant: "danger",
+          },
         ]}
       >
-        <p>You have unsaved changes. Switching CVs will discard them. Continue?</p>
+        <p>
+          You have unsaved changes. Switching CVs will discard them. Continue?
+        </p>
       </Modal>
 
       <Modal
@@ -460,7 +520,7 @@ export default function Toolbar({
       >
         <p>
           Replace editor content with the default CV template? Your saved slot
-          is not affected — only the current editor content.
+          is not affected - only the current editor content.
         </p>
       </Modal>
 
@@ -506,12 +566,32 @@ function PrintChecklistModal({ isOpen, onClose, onConfirm }) {
         },
       ]}
     >
-      <div className="checklist-item"><span>1.</span><span>Set Destination to <em>Save as PDF</em> — not <em>Microsoft Print to PDF</em></span></div>
-      <div className="checklist-item"><span>2.</span><span>Set Margins to <em>None</em></span></div>
-      <div className="checklist-item"><span>3.</span><span>Enable <em>Background graphics</em></span></div>
+      <div className="checklist-item">
+        <span>1.</span>
+        <span>
+          Set Destination to <em>Save as PDF</em> - not{" "}
+          <em>Microsoft Print to PDF</em>
+        </span>
+      </div>
+      <div className="checklist-item">
+        <span>2.</span>
+        <span>
+          Set Margins to <em>None</em>
+        </span>
+      </div>
+      <div className="checklist-item">
+        <span>3.</span>
+        <span>
+          Enable <em>Background graphics</em>
+        </span>
+      </div>
       <hr className="checklist-divider" />
       <label className="checklist-item" style={{ cursor: "pointer" }}>
-        <input type="checkbox" checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} />
+        <input
+          type="checkbox"
+          checked={dontShow}
+          onChange={(e) => setDontShow(e.target.checked)}
+        />
         <span>Don't show this again</span>
       </label>
     </Modal>

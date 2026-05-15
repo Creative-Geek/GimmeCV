@@ -79,11 +79,11 @@ Creative and detail-oriented Product Designer with 6+ years of experience in UX/
 
 ## Skills
 
-**Design Skills** — Figma, Adobe XD, Sketch, InVision, Principle, After Effects, Illustrator, Photoshop
+**Design Skills** - Figma, Adobe XD, Sketch, InVision, Principle, After Effects, Illustrator, Photoshop
 
-**Technical Skills** — HTML, CSS, JavaScript basics, React components, Design Systems, Responsive Design
+**Technical Skills** - HTML, CSS, JavaScript basics, React components, Design Systems, Responsive Design
 
-**Soft Skills** — User Research, Wireframing, Prototyping, A/B Testing, Stakeholder Communication
+**Soft Skills** - User Research, Wireframing, Prototyping, A/B Testing, Stakeholder Communication
 
 ## Experience
 

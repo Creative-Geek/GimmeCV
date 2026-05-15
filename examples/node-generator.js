@@ -25,9 +25,8 @@ function generateGimmeCVUrl(
 ) {
   // Step 1: Build the payload
   // Pass options to embed layout config (v2). Omit or pass null for v1 (content-only).
-  const payload = options
-    ? JSON.stringify({ v: 2, c: markdownCV, o: options })
-    : markdownCV;
+  const payload =
+    options ? JSON.stringify({ v: 2, c: markdownCV, o: options }) : markdownCV;
 
   // Step 2: Convert to bytes and compress with zlib
   const textBytes = Buffer.from(payload, "utf-8");
@@ -74,9 +73,9 @@ Full-stack developer with 8+ years of experience building scalable web applicati
 
 ## Skills
 
-**Technical Skills** — JavaScript, TypeScript, React, Node.js, Python, PostgreSQL, MongoDB, Docker, Kubernetes, AWS, Git, CI/CD
+**Technical Skills** - JavaScript, TypeScript, React, Node.js, Python, PostgreSQL, MongoDB, Docker, Kubernetes, AWS, Git, CI/CD
 
-**Soft Skills** — Leadership, Communication, Problem-Solving, Agile Methodologies, Code Review
+**Soft Skills** - Leadership, Communication, Problem-Solving, Agile Methodologies, Code Review
 
 ## Experience
 

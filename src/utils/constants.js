@@ -40,9 +40,9 @@ A brief, compelling summary of your skills, experience, and career goals. Tailor
 
 ## Skills
 
-**Technical Skills** — **Programming & Frameworks:** Language A, Language B, Framework X, Framework Y. | **Field-Specific Area:** Skill A, Skill B, Tool C. | **Cloud & DevOps:** Cloud Provider, Containerization Tool, CI/CD Platform. | **Tools & Technologies:** Version Control, Database A, Database B, IDEs, Design Software. | **Other Technical Skills:** Skill X, Skill Y.
+**Technical Skills** - **Programming & Frameworks:** Language A, Language B, Framework X, Framework Y. | **Field-Specific Area:** Skill A, Skill B, Tool C. | **Cloud & DevOps:** Cloud Provider, Containerization Tool, CI/CD Platform. | **Tools & Technologies:** Version Control, Database A, Database B, IDEs, Design Software. | **Other Technical Skills:** Skill X, Skill Y.
 
-**Soft Skills** — Communication, Teamwork, Problem-Solving, Adaptability, Creativity, Time Management, Detail-Oriented.
+**Soft Skills** - Communication, Teamwork, Problem-Solving, Adaptability, Creativity, Time Management, Detail-Oriented.
 
 ## Technical Experience
 

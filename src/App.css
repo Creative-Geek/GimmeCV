@@ -31,7 +31,7 @@ body {
   z-index: 100;
 }
 
-/* Row 1 — document bar */
+/* Row 1 - document bar */
 .toolbar-row1 {
   display: flex;
   align-items: center;
@@ -39,7 +39,7 @@ body {
   min-height: 40px;
 }
 
-/* Row 2 — layout options bar */
+/* Row 2 - layout options bar */
 .toolbar-row2 {
   display: flex;
   align-items: center;
@@ -89,7 +89,7 @@ body {
   flex-shrink: 0;
 }
 
-/* Dirty indicator — right after slot */
+/* Dirty indicator - right after slot */
 .dirty-indicator {
   color: #ef4444;
   font-size: 11px;
@@ -425,7 +425,7 @@ body {
 }
 
 .preview-page {
-  /* Always true A4 dimensions — zoom handles visual scaling */
+  /* Always true A4 dimensions - zoom handles visual scaling */
   width: 210mm;
   height: 297mm;
   background: white;

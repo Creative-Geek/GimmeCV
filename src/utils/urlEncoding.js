@@ -101,7 +101,7 @@ export function decodeFromUrl(encodedData) {
         return { content: obj.c, options: obj.o };
       }
     } catch {
-      // Not JSON or not v2 — treat as plain text (v1)
+      // Not JSON or not v2 - treat as plain text (v1)
     }
 
     return { content: text, options: null };

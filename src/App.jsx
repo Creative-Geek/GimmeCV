@@ -41,7 +41,7 @@ function App() {
     () =>
       content !== savedContent ||
       stableStringify(options) !== stableStringify(savedOptions),
-    [content, options, savedContent, savedOptions]
+    [content, options, savedContent, savedOptions],
   );
 
   const refreshSlotList = useCallback(() => {
@@ -60,7 +60,7 @@ function App() {
         setOptions(mergedOptions);
         setSavedContent(urlData.content);
         setSavedOptions(mergedOptions);
-        // Don't create a slot yet — load as unsaved, user decides to Save As
+        // Don't create a slot yet - load as unsaved, user decides to Save As
         window.history.replaceState(null, "", window.location.pathname);
         refreshSlotList();
         return;
@@ -91,7 +91,8 @@ function App() {
   useEffect(() => {
     const activeSlot = activeSlotId ? loadSlot(activeSlotId) : null;
     const slotName = activeSlot ? activeSlot.name : "Untitled";
-    document.title = isDirty ? `* ${slotName} — GimmeCV` : `${slotName} — GimmeCV`;
+    document.title =
+      isDirty ? `* ${slotName} - GimmeCV` : `${slotName} - GimmeCV`;
   }, [isDirty, activeSlotId]);
 
   // ── Ctrl+S handler ────────────────────────────
@@ -145,23 +146,20 @@ function App() {
       refreshSlotList();
       return id;
     },
-    [content, options, refreshSlotList]
+    [content, options, refreshSlotList],
   );
 
-  const handleSwitchSlot = useCallback(
-    (id) => {
-      const slot = loadSlot(id);
-      if (!slot) return;
-      setActiveSlotIdState(id);
-      setActiveSlot(id);
-      setContent(slot.content);
-      const mergedOptions = { ...DEFAULT_OPTIONS, ...slot.options };
-      setOptions(mergedOptions);
-      setSavedContent(slot.content);
-      setSavedOptions(mergedOptions);
-    },
-    []
-  );
+  const handleSwitchSlot = useCallback((id) => {
+    const slot = loadSlot(id);
+    if (!slot) return;
+    setActiveSlotIdState(id);
+    setActiveSlot(id);
+    setContent(slot.content);
+    const mergedOptions = { ...DEFAULT_OPTIONS, ...slot.options };
+    setOptions(mergedOptions);
+    setSavedContent(slot.content);
+    setSavedOptions(mergedOptions);
+  }, []);
 
   const handleRevert = useCallback(() => {
     if (!activeSlotId) return;
@@ -184,7 +182,7 @@ function App() {
       renameSlot(id, name);
       refreshSlotList();
     },
-    [refreshSlotList]
+    [refreshSlotList],
   );
 
   const handleDeleteSlot = useCallback(
@@ -198,7 +196,7 @@ function App() {
           handleSwitchSlot(nextId);
         }
       } else {
-        // No slots left — reset to defaults
+        // No slots left - reset to defaults
         setActiveSlotIdState(null);
         setContent(DEFAULT_CV);
         setOptions({ ...DEFAULT_OPTIONS });
@@ -207,7 +205,7 @@ function App() {
       }
       refreshSlotList();
     },
-    [handleSwitchSlot, refreshSlotList]
+    [handleSwitchSlot, refreshSlotList],
   );
 
   return (
