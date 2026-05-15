@@ -359,7 +359,7 @@ export default function Toolbar({
               <span className="btn-label">Save</span>
             </button>
             <button
-              className="btn"
+              className="btn btn-save-as"
               onClick={() => {
                 setSaveAsName("");
                 setModalType("saveAs");
@@ -422,7 +422,7 @@ export default function Toolbar({
             href="https://github.com/Creative-Geek/GimmeCV"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn"
+            className="btn toolbar-github"
             title="View on GitHub"
             style={{ textDecoration: "none" }}
           >
