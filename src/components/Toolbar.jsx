@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import IconImage from "../../images/icon.png";
 import { generateShareableUrl, validateUrlLength } from "../utils/urlEncoding";
+import { shortenUrl } from "../utils/urlShortener";
 import Modal from "./Modal";
 import { useToast } from "./Toast";
 
@@ -229,6 +230,21 @@ export default function Toolbar({
   };
 
   // ── Share URL ───────────────────────────────────
+  const handleShortenUrl = async (longUrl) => {
+    addToast("Shortening...", "success", 2000);
+    const shortUrl = await shortenUrl(longUrl);
+    if (shortUrl) {
+      try {
+        await navigator.clipboard.writeText(shortUrl);
+        addToast("Short link copied!", "success");
+      } catch {
+        addToast("Failed to copy short link", "error");
+      }
+    } else {
+      addToast("Shortening unavailable", "warning");
+    }
+  };
+
   const handleGenerateUrl = () => {
     try {
       const result = generateShareableUrl({ content, options });
@@ -239,7 +255,23 @@ export default function Toolbar({
         .then(() => {
           let msg = "Link copied!";
           if (validation.warning) msg += ` ${validation.warning}`;
-          addToast(msg, validation.warning ? "warning" : "success", 4000);
+          const toastType = validation.warning ? "warning" : "success";
+          addToast(
+            <span>
+              {msg}{" "}
+              <button
+                className="toast-action"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleShortenUrl(result.url);
+                }}
+              >
+                Shorten
+              </button>
+            </span>,
+            toastType,
+            6000,
+          );
         })
         .catch(() =>
           addToast("Failed to copy - check browser permissions", "error"),
