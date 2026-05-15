@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { parseFrontmatter, postProcessHTML } from "../utils/cvParser";
 import { buildHTML } from "../utils/htmlBuilder";
 import { deleteSlot } from "../utils/storage";
+import { THEMES, THEME_KEYS } from "../utils/constants";
 import {
   Download,
   Save,
@@ -428,6 +429,22 @@ export default function Toolbar({
 
         {/* ── Row 2: layout options (collapsible) ── */}
         <div className={`toolbar-row2${showLayout ? "" : " hidden"}`}>
+          <label>
+            Theme
+            <select
+              className="slot-select"
+              value={options.theme || "modern"}
+              onChange={(e) => handleOptionChange("theme", e.target.value)}
+              style={{ width: "auto", minWidth: 100 }}
+            >
+              {THEME_KEYS.map((key) => (
+                <option key={key} value={key}>
+                  {THEMES[key].label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="toolbar-sep" />
           {[
             { key: "fontSize", label: "Font size", validate: validateCssValue },
             {

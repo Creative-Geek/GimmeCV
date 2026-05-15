@@ -67,21 +67,407 @@ A brief, compelling summary of your skills, experience, and career goals. Tailor
 
 _Degree Name | GPA: X.X | Graduation Project Grade: Grade (or Honors/Distinctions)_`;
 
-export const BASE_CSS = `#resume-preview [data-scope="vue-smart-pages"][data-part="page"] {
+// ─── Shared CSS (layout rules identical across all themes) ─────────────────
+const SHARED_CSS = `
+#resume-preview p,
+#resume-preview li,
+#resume-preview dl {
+  margin: 0;
+}
+
+#resume-preview dl {
+  display: flex;
+}
+
+#resume-preview dl dt,
+#resume-preview dl dd {
+  flex: none;
+}
+
+#resume-preview dl dd {
+  white-space: nowrap;
+}
+
+#resume-preview svg.iconify {
+  vertical-align: -0.2em;
+}
+
+#resume-preview img {
+  max-width: 100%;
+}
+
+#resume-preview .resume-header {
+  text-align: center;
+}
+
+#resume-preview .resume-header h1 {
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+#resume-preview .resume-header-item {
+  display: inline-block;
+  margin: 0 4px;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+#resume-preview .resume-header h1 + .resume-header-item {
+  display: block;
+}
+
+#resume-preview .resume-header h1 + .resume-header-item::after {
+  display: none;
+}
+
+
+#resume-preview .project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 5px;
+  margin-bottom: 3px;
+}
+
+#resume-preview .project-title {
+  flex: 1;
+}
+
+#resume-preview .project-title p {
+  margin: 0;
+  line-height: 1.2;
+  display: inline-block;
+  width: 100%;
+}
+
+#resume-preview .project-title p strong,
+#resume-preview .project-title p em,
+#resume-preview .project-title p a {
+  display: inline !important;
+  white-space: normal;
+}
+
+#resume-preview .project-title p strong {
+  margin-right: 2px;
+}
+
+#resume-preview .project-title p em {
+  font-style: italic;
+}
+
+#resume-preview a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#resume-preview a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+#resume-preview ul,
+#resume-preview ol {
+  padding-left: 1.5em;
+  margin: 0.1em 0;
+}
+
+#resume-preview ol {
+  list-style-type: decimal;
+}
+`;
+
+// ─── Theme: Classic (Merriweather — traditional serif) ─────────────────────
+const CLASSIC_CSS = `
+#resume-preview [data-scope="vue-smart-pages"][data-part="page"] {
   background-color: white;
-  color: black;
+  color: #000;
+  font-family: 'Merriweather', serif;
   text-align: justify;
   -moz-hyphens: auto;
   -ms-hyphens: auto;
   -webkit-hyphens: auto;
   hyphens: auto;
   font-size: 12px;
+  line-height: 1.4;
 }
 
-#resume-preview p,
-#resume-preview li,
-#resume-preview dl {
-  margin: 0;
+#resume-preview h1,
+#resume-preview h2,
+#resume-preview h3 {
+  font-weight: 700;
+}
+
+#resume-preview h1 {
+  font-size: 2.1em;
+}
+
+#resume-preview h2,
+#resume-preview h3 {
+  margin-bottom: 3px;
+  font-size: 1em;
+}
+
+#resume-preview h2 {
+  border-bottom: 2px solid #000;
+  padding-bottom: 2px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+#resume-preview h3 {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+#resume-preview .resume-header-item:not(.no-separator)::after {
+  content: " | ";
+  color: #555;
+  font-weight: 400;
+}
+
+#resume-preview .project-date {
+  flex-shrink: 0;
+  margin-left: 20px;
+  font-style: italic;
+  white-space: nowrap;
+  color: #333;
+  font-weight: 400;
+}
+
+#resume-preview ul {
+  list-style-type: disc;
+  margin-left: 10px;
+  margin-bottom: 4px;
+}
+
+#resume-preview p {
+  margin-bottom: 3px;
+}
+`;
+
+// ─── Theme: Modern (Inter — clean geometric sans-serif) ───────────────────
+const MODERN_CSS = `
+#resume-preview [data-scope="vue-smart-pages"][data-part="page"] {
+  background-color: white;
+  color: #1a1a1a;
+  font-family: 'Inter', sans-serif;
+  text-align: justify;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+#resume-preview h1,
+#resume-preview h2,
+#resume-preview h3 {
+  font-weight: 700;
+}
+
+#resume-preview h1 {
+  font-size: 2.13em;
+  letter-spacing: -0.01em;
+}
+
+#resume-preview h2,
+#resume-preview h3 {
+  margin-bottom: 3px;
+  font-size: 1.1em;
+}
+
+#resume-preview h2 {
+  border-bottom: 1px solid #94a3b8;
+  padding-bottom: 3px;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  letter-spacing: 0.07em;
+  color: #1e293b;
+}
+
+#resume-preview h3 {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+#resume-preview .resume-header-item:not(.no-separator)::after {
+  content: " · ";
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+#resume-preview .project-date {
+  flex-shrink: 0;
+  margin-left: 20px;
+  font-style: italic;
+  white-space: nowrap;
+  color: #64748b;
+  font-weight: 400;
+}
+
+#resume-preview ul {
+  list-style-type: disc;
+  margin-left: 10px;
+  margin-bottom: 4px;
+}
+
+#resume-preview p {
+  margin-bottom: 3px;
+}
+`;
+
+// ─── Theme: Editorial (Refined / Academic / Professional Serif) ────────────
+const EDITORIAL_CSS = `
+#resume-preview [data-scope="vue-smart-pages"][data-part="page"] {
+  background-color: white;
+  color: #1a1a1a;
+  font-family: 'Playfair Display', serif;
+  text-align: justify;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+#resume-preview h1 {
+  font-size: 1.9em;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+  line-height: 1.2;
+  text-align: left;
+}
+
+#resume-preview h2 {
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 2px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #444;
+}
+
+#resume-preview h3 {
+  margin-top: 10px;
+  margin-bottom: 4px;
+  font-size: 1.05em;
+  font-weight: 700;
+}
+
+#resume-preview .resume-header {
+  text-align: left;
+}
+
+#resume-preview .resume-header-item {
+  margin-left: 0;
+  margin-right: 8px;
+  font-size: 0.95em;
+}
+
+#resume-preview .resume-header-item:not(.no-separator)::after {
+  content: " · ";
+  color: #ccc;
+}
+
+#resume-preview .project-date {
+  font-style: normal;
+  font-size: 0.9em;
+  color: #777;
+  font-weight: 400;
+}
+
+#resume-preview ul {
+  list-style-type: disc;
+  padding-left: 1.2em;
+  margin-top: 6px;
+}
+
+#resume-preview ul li {
+  margin-bottom: 4px;
+}
+
+#resume-preview p {
+  margin-bottom: 6px;
+}
+
+#resume-preview strong {
+  font-weight: 700;
+  color: #000;
+}
+`;
+
+// ─── Theme: Broadsheet (Traditional News / Masthead Style) ────────────────
+const BROADSHEET_CSS = `
+#resume-preview [data-scope="vue-smart-pages"][data-part="page"] {
+  background-color: white;
+  color: #111;
+  font-family: 'Libre Baskerville', serif;
+  text-align: justify;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+#resume-preview h1 {
+  font-size: 2.6em;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+#resume-preview h2 {
+  border-top: 2px solid #111;
+  border-bottom: 1px solid #111;
+  padding: 3px 0;
+  margin-top: 14px;
+  margin-bottom: 10px;
+  font-size: 1em;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+#resume-preview h3 {
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+#resume-preview .resume-header-item:not(.no-separator)::after {
+  content: "  •  ";
+  color: #444;
+}
+
+#resume-preview .project-date {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+#resume-preview ul {
+  list-style-type: disc;
+}
+`;
+
+// ─── Theme: Default (Noto Sans Arabic — the original) ─────────────────────
+const DEFAULT_CSS = `
+#resume-preview [data-scope="vue-smart-pages"][data-part="page"] {
+  background-color: white;
+  color: black;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  text-align: justify;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  font-size: 12px;
 }
 
 #resume-preview h1,
@@ -109,68 +495,14 @@ export const BASE_CSS = `#resume-preview [data-scope="vue-smart-pages"][data-par
   text-transform: uppercase;
 }
 
-#resume-preview ul,
-#resume-preview ol {
-  padding-left: 1.5em;
-  margin: 0.1em 0;
-}
-
-#resume-preview ul {
-  list-style-type: circle;
-}
-
-#resume-preview ol {
-  list-style-type: decimal;
-}
-
-#resume-preview dl {
-  display: flex;
-}
-
-#resume-preview dl dt,
-#resume-preview dl dd {
-  flex: none;
-}
-
-#resume-preview svg.iconify {
-  vertical-align: -0.2em;
-}
-
-#resume-preview img {
-  max-width: 100%;
-}
-
-#resume-preview .resume-header {
-  text-align: center;
-}
-
-#resume-preview .resume-header h1 {
-  text-align: center;
-  line-height: 1;
-  margin-bottom: 8px;
+#resume-preview h3 {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  display: block;
 }
 
 #resume-preview .resume-header-item:not(.no-separator)::after {
   content: "";
-}
-
-#resume-preview .resume-header-item {
-  display: inline-block;
-  margin: 0 4px;
-  line-height: 1;
-  margin-bottom: 5px;
-}
-
-#resume-preview .project-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-top: 5px;
-  margin-bottom: 3px;
-}
-
-#resume-preview .project-title {
-  flex: 1;
 }
 
 #resume-preview .project-date {
@@ -181,63 +513,34 @@ export const BASE_CSS = `#resume-preview [data-scope="vue-smart-pages"][data-par
   color: #333333;
 }
 
-#resume-preview h3 {
-  margin-top: 6px;
-  margin-bottom: 6px;
-  display: block;
-}
-
-#resume-preview .project-title p {
-  margin: 0;
-  line-height: 1.2;
-  display: inline-block;
-  width: 100%;
-}
-
-#resume-preview .project-title p strong,
-#resume-preview .project-title p em,
-#resume-preview .project-title p a {
-  display: inline !important;
-  white-space: normal;
-}
-
-#resume-preview .project-title p strong {
-  margin-right: 2px;
-}
-
-#resume-preview .project-title p em {
-  font-style: italic;
-}
-
-#resume-preview p {
-  margin-bottom: 3px;
-}
-
-#resume-preview dl dt,
-#resume-preview dl dd {
-  flex: none;
-}
-
-#resume-preview dl dd {
-  white-space: nowrap;
-}
-
 #resume-preview ul {
   list-style-type: disc;
   margin-left: 10px;
   margin-bottom: 4px;
 }
 
-#resume-preview .resume-header h1 + .resume-header-item {
-  display: block;
+#resume-preview p {
+  margin-bottom: 3px;
+}
+`;
+
+// ─── Theme registry ───────────────────────────────────────────────────────
+export const THEMES = {
+  default: { label: "Default", css: SHARED_CSS + DEFAULT_CSS, font: "Noto Sans Arabic" },
+  classic: { label: "Classic", css: SHARED_CSS + CLASSIC_CSS, font: "Merriweather" },
+  modern: { label: "Modern", css: SHARED_CSS + MODERN_CSS, font: "Inter" },
+  editorial: { label: "Editorial", css: SHARED_CSS + EDITORIAL_CSS, font: "Playfair Display" },
+  broadsheet: { label: "Broadsheet", css: SHARED_CSS + BROADSHEET_CSS, font: "Libre Baskerville" },
+};
+
+export const THEME_KEYS = Object.keys(THEMES);
+
+/** Get the combined CSS for a theme (falls back to default). */
+export function getThemeCSS(themeName) {
+  return (THEMES[themeName] || THEMES.default).css;
 }
 
-#resume-preview a {
-  color: inherit;
-  text-decoration: none;
+/** Get the Google Font family name for a theme. */
+export function getThemeFont(themeName) {
+  return (THEMES[themeName] || THEMES.default).font;
 }
-
-#resume-preview a:hover {
-  color: inherit;
-  text-decoration: none;
-}`;

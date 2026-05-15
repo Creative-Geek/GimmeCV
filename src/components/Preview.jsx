@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { parseFrontmatter, postProcessHTML } from "../utils/cvParser";
 import { generateHeader, generatePreviewHTML } from "../utils/htmlBuilder";
+import { fixHeaderSeparators } from "../utils/separatorFix";
 
 // A4 in pixels at 96dpi
 const A4_PX = 794;
@@ -47,6 +48,8 @@ export default function Preview({ content, options }) {
       if (previewRef.current) {
         previewRef.current.innerHTML = previewHTML;
         if (window.Iconify) window.Iconify.scan();
+        // Fix separators based on line wrapping
+        fixHeaderSeparators(previewRef.current);
       }
     }, 300);
 
