@@ -37,6 +37,11 @@ function App() {
   // Mobile editor toggle
   const [showMobileEditor, setShowMobileEditor] = useState(false);
 
+  // Mobile disclaimer dismissed state
+  const [mobileDisclaimerDismissed, setMobileDisclaimerDismissed] = useState(() => {
+    return localStorage.getItem('gimmecv:mobileDisclaimerDismissed') === 'true';
+  });
+
   const isDirty = useMemo(
     () =>
       content !== savedContent ||
@@ -201,12 +206,17 @@ function App() {
         setContent(DEFAULT_CV);
         setOptions({ ...DEFAULT_OPTIONS });
         setSavedContent(DEFAULT_CV);
-        setSavedOptions({ ...DEFAULT_OPTIONS });
+        setSavedOptions(DEFAULT_OPTIONS);
       }
       refreshSlotList();
     },
     [handleSwitchSlot, refreshSlotList],
   );
+
+  const handleDismissMobileDisclaimer = useCallback(() => {
+    setMobileDisclaimerDismissed(true);
+    localStorage.setItem('gimmecv:mobileDisclaimerDismissed', 'true');
+  }, []);
 
   return (
     <div className="app-root">
@@ -241,6 +251,20 @@ function App() {
           }}
         >
           <strong>URL Error:</strong> {urlLoadError}
+        </div>
+      )}
+      {!mobileDisclaimerDismissed && (
+        <div className="mobile-disclaimer-banner">
+          <span className="mobile-disclaimer-text">
+            For the best experience with all features, use a desktop browser
+          </span>
+          <button
+            className="mobile-disclaimer-close"
+            onClick={handleDismissMobileDisclaimer}
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
         </div>
       )}
       <div className="container">
