@@ -6,4 +6,5 @@ export const DEFAULT_OPTIONS = {
   marginBottom: "0px",
   marginLeft: "40px",
   marginRight: "40px",
+  showIcons: false,
 };

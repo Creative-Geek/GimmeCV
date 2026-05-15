@@ -63,6 +63,13 @@ export function generateAdditionalStyles(opts, isExport = false) {
     `;
   }
 
+  if (opts.showIcons === false) {
+    styles += `
+      #resume-preview .iconify,
+      #resume-preview svg.iconify { display: none !important; }
+    `;
+  }
+
   styles += `</style>`;
   return styles;
 }
@@ -93,7 +100,7 @@ export function buildHTML(fm, contentHTML, opts) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${title}</title>
     ${fontLink(opts.theme)}
-  <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+  ${opts.showIcons !== false ? '<script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>' : ""}
     <style>
       ${themeCSS}
     </style>

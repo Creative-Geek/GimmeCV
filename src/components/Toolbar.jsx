@@ -14,7 +14,7 @@ import {
   Trash2,
   Pencil,
   MoreHorizontal,
-  Settings2,
+  ChevronDown,
   ArrowRight,
 } from "lucide-react";
 import IconImage from "../../images/icon.png";
@@ -404,11 +404,15 @@ export default function Toolbar({
 
           {/* Layout toggle */}
           <button
-            className={`btn btn-icon layout-toggle${showLayout ? " btn-primary" : ""}`}
+            className={`btn layout-toggle${showLayout ? " active" : ""}`}
             onClick={() => setShowLayout((v) => !v)}
-            title="Toggle layout options"
+            title="Toggle styling options"
           >
-            <Settings2 size={14} />
+            <ChevronDown
+              size={14}
+              className={`layout-chevron${showLayout ? " rotated" : ""}`}
+            />
+            Styling options
           </button>
 
           {/* Spacer → GitHub far right */}
@@ -443,6 +447,17 @@ export default function Toolbar({
                 </option>
               ))}
             </select>
+          </label>
+          <div className="toolbar-sep" />
+          <label className="toolbar-checkbox-label">
+            <input
+              type="checkbox"
+              checked={options.showIcons !== false}
+              onChange={(e) =>
+                handleOptionChange("showIcons", e.target.checked)
+              }
+            />
+            Show icons
           </label>
           <div className="toolbar-sep" />
           {[

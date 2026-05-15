@@ -35,19 +35,27 @@ export default function Preview({ content, options }) {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
 
     debounceTimerRef.current = setTimeout(() => {
-      const { frontmatter, content: markdownContent, error } =
-        parseFrontmatter(content);
+      const {
+        frontmatter,
+        content: markdownContent,
+        error,
+      } = parseFrontmatter(content);
 
       setYamlError(error);
 
-      const md = window.markdownit({ html: true, linkify: true, typographer: true });
+      const md = window.markdownit({
+        html: true,
+        linkify: true,
+        typographer: true,
+      });
       const contentHTML = postProcessHTML(md.render(markdownContent));
       const headerHTML = generateHeader(frontmatter);
       const previewHTML = generatePreviewHTML(headerHTML, contentHTML, options);
 
       if (previewRef.current) {
         previewRef.current.innerHTML = previewHTML;
-        if (window.Iconify) window.Iconify.scan();
+        if (window.Iconify && options.showIcons !== false)
+          window.Iconify.scan();
         // Fix separators based on line wrapping
         fixHeaderSeparators(previewRef.current);
       }
