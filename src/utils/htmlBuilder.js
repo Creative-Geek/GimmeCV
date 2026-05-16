@@ -7,9 +7,8 @@ export function generateHeader(fm) {
   const items = fm.header
     .map((item, i) => {
       const isLast = i === fm.header.length - 1;
-      const cls = isLast
-        ? "resume-header-item no-separator"
-        : "resume-header-item";
+      const cls =
+        isLast ? "resume-header-item no-separator" : "resume-header-item";
       const dataAttr = isLast ? ' data-explicit-no-separator="true"' : "";
       if (item.link) {
         return `<span class="${cls}"${dataAttr}>
@@ -45,6 +44,7 @@ export function generateAdditionalStyles(opts, isExport = false) {
     styles += `
       /* Export-specific overrides to match preview exactly but allow flexibility */
       @page {
+        size: A4;
         margin: 0;
       }
 
