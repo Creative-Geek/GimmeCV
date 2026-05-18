@@ -16,6 +16,9 @@ import {
   MoreHorizontal,
   ChevronDown,
   ArrowRight,
+  Copy,
+  Check,
+  Loader
 } from "lucide-react";
 import IconImage from "../../images/icon.png";
 import { generateShareableUrl, validateUrlLength } from "../utils/urlEncoding";
@@ -43,6 +46,13 @@ export default function Toolbar({
   const { addToast } = useToast();
 
   // Modal state
+
+  // URL Share Modal state
+  const [shareUrlObj, setShareUrlObj] = useState(null);
+  const [shortUrlStr, setShortUrlStr] = useState(null);
+  const [isShortening, setIsShortening] = useState(false);
+  const [shortenShake, setShortenShake] = useState(false);
+
   const [modalType, setModalType] = useState(null);
   const [saveAsName, setSaveAsName] = useState("");
   const [renameName, setRenameName] = useState("");
@@ -231,59 +241,47 @@ export default function Toolbar({
   };
 
   // ── Share URL ───────────────────────────────────
-  const handleShortenUrl = async (longUrl) => {
-    addToast("Shortening...", "success", 2000);
-    const shortUrl = await shortenUrl(longUrl);
-    if (shortUrl) {
-      try {
-        await navigator.clipboard.writeText(shortUrl);
-        addToast("Short link copied!", "success");
-      } catch {
-        addToast("Failed to copy short link", "error");
-      }
-    } else {
-      addToast("Shortening unavailable", "warning");
-    }
-  };
+
 
   const handleGenerateUrl = () => {
     try {
       const result = generateShareableUrl({ content, options });
       const validation = validateUrlLength(result.url);
       console.log("URL stats:", result);
-      navigator.clipboard
-        .writeText(result.url)
-        .then(() => {
-          let msg = "Link copied!";
-          if (validation.warning) msg += ` ${validation.warning}`;
-          const toastType = validation.warning ? "warning" : "success";
-          addToast(
-            <span>
-              {msg}{" "}
-              <button
-                className="toast-action"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleShortenUrl(result.url);
-                }}
-              >
-                Shorten
-              </button>
-            </span>,
-            toastType,
-            6000,
-          );
-        })
-        .catch(() =>
-          addToast("Failed to copy - check browser permissions", "error"),
-        );
+
+      if (validation.warning) {
+        addToast(validation.warning, "warning");
+      }
+
+      setShareUrlObj(result);
+      setShortUrlStr(null);
+      setIsShortening(false);
+      setShortenShake(false);
+      setModalType("shareUrl");
     } catch (error) {
       addToast(`${error.message}`, "error");
     }
   };
 
+  const handleModalShorten = async () => {
+    if (!shareUrlObj) return;
+    setIsShortening(true);
+    setShortenShake(false);
+
+    const short = await shortenUrl(shareUrlObj.url);
+    setIsShortening(false);
+
+    if (short) {
+      setShortUrlStr(short);
+    } else {
+      addToast("Failed to shorten URL", "error");
+      setShortenShake(true);
+      setTimeout(() => setShortenShake(false), 400); // Remove shake class after animation
+    }
+  };
+
   // ── Render ──────────────────────────────────────
-  const activeSlotName = slotList.find((s) => s.id === activeSlotId)?.name;
+
 
   return (
     <>
@@ -600,6 +598,37 @@ export default function Toolbar({
         <p>Permanently delete this saved CV? This cannot be undone.</p>
       </Modal>
 
+
+      <Modal
+        isOpen={modalType === "shareUrl"}
+        onClose={closeModal}
+        title="Share URL"
+        actions={[
+          { label: "Close", onClick: closeModal },
+          {
+            label: isShortening ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Loader size={14} className="spin" /> Shortening...
+              </span>
+            ) : "Shorten URL",
+            onClick: handleModalShorten,
+            variant: "primary",
+            disabled: isShortening || !!shortUrlStr,
+            className: shortenShake ? "btn-shake" : ""
+          },
+        ]}
+      >
+        <p>Your shareable link:</p>
+        <UrlInput url={shareUrlObj?.url} autoCopy={true} />
+
+        {shortUrlStr && (
+          <>
+            <p style={{ marginTop: '16px' }}>Shortened link:</p>
+            <UrlInput url={shortUrlStr} autoCopy={true} />
+          </>
+        )}
+      </Modal>
+
       <PrintChecklistModal
         isOpen={modalType === "printChecklist"}
         onClose={closeModal}
@@ -659,5 +688,51 @@ function PrintChecklistModal({ isOpen, onClose, onConfirm }) {
         <span>Don't show this again</span>
       </label>
     </Modal>
+  );
+}
+
+
+function UrlInput({ url, autoCopy = false }) {
+  const [copied, setCopied] = useState(false);
+  const inputRef = useRef(null);
+
+  const handleCopy = useCallback(async () => {
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      if (inputRef.current) {
+        inputRef.current.select();
+      }
+    } catch (e) {
+      console.error("Failed to copy", e);
+    }
+  }, [url]);
+
+  useEffect(() => {
+    if (autoCopy && url) {
+      handleCopy();
+    }
+  }, [url, autoCopy, handleCopy]);
+
+  return (
+    <div className="url-input-container">
+      <input
+        ref={inputRef}
+        type="text"
+        readOnly
+        value={url || ""}
+        onClick={(e) => e.target.select()}
+      />
+      <button
+        className="btn btn-icon"
+        onClick={handleCopy}
+        title="Copy to clipboard"
+        style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        {copied ? <Check size={16} /> : <Copy size={16} />}
+      </button>
+    </div>
   );
 }

@@ -40,8 +40,9 @@ export default function Modal({ isOpen, onClose, title, children, actions = [] }
             {actions.map((a, i) => (
               <button
                 key={i}
-                className={`btn ${a.variant ? `btn-${a.variant}` : ""}`}
+                className={`btn ${a.variant ? `btn-${a.variant}` : ""} ${a.className || ""}`.trim()}
                 onClick={a.onClick}
+                disabled={a.disabled}
               >
                 {a.label}
               </button>
